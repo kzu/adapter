@@ -1,0 +1,68 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter", "Adapter\Adapter.csproj", "{F8C7AE23-D170-4852-BF5B-C1C8CB423DF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Sdk", "Adapter.Sdk\Adapter.Sdk.csproj", "{FA9A5CE1-E1F0-4164-8E00-D9734D80C62B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Interfaces", "Adapter.Interfaces\Adapter.Interfaces.csproj", "{45BF5CD9-3D28-4C36-8FDF-0440067A7EDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.UnitTests", "Adapter.UnitTests\Adapter.UnitTests.csproj", "{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Composition", "Adapter.Composition\Adapter.Composition.csproj", "{3B24C89D-BBF4-4490-9963-691AAE989D5A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E324D78C-BD78-4C65-8EEA-7CE2D6508A1A}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1A2DD633-F824-483A-996E-D6413EED16AA}"
+	ProjectSection(SolutionItems) = preProject
+		ClariusLabs.licenseheader = ClariusLabs.licenseheader
+		ClariusLabs.props = ClariusLabs.props
+		ClariusLabs.targets = ClariusLabs.targets
+		GlobalAssemblyInfo.cs = GlobalAssemblyInfo.cs
+		License.txt = License.txt
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{8BB8E0BB-B4A1-453D-8526-C817371C5CBF}"
+	ProjectSection(SolutionItems) = preProject
+		build.bat = build.bat
+		Build\Build.proj = Build\Build.proj
+		Build\Build.tasks = Build\Build.tasks
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F8C7AE23-D170-4852-BF5B-C1C8CB423DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8C7AE23-D170-4852-BF5B-C1C8CB423DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8C7AE23-D170-4852-BF5B-C1C8CB423DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8C7AE23-D170-4852-BF5B-C1C8CB423DF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA9A5CE1-E1F0-4164-8E00-D9734D80C62B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA9A5CE1-E1F0-4164-8E00-D9734D80C62B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA9A5CE1-E1F0-4164-8E00-D9734D80C62B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA9A5CE1-E1F0-4164-8E00-D9734D80C62B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45BF5CD9-3D28-4C36-8FDF-0440067A7EDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45BF5CD9-3D28-4C36-8FDF-0440067A7EDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45BF5CD9-3D28-4C36-8FDF-0440067A7EDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45BF5CD9-3D28-4C36-8FDF-0440067A7EDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B24C89D-BBF4-4490-9963-691AAE989D5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B24C89D-BBF4-4490-9963-691AAE989D5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B24C89D-BBF4-4490-9963-691AAE989D5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B24C89D-BBF4-4490-9963-691AAE989D5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
