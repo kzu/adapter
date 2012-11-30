@@ -1,9 +1,9 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <package>
     <metadata>
         <id>Adapter</id>
         <title>Adapter</title>
-        <version>1.0</version>
+        <version>1.0.1211.3013</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>
         <summary>Provides the implementation of an adapter pattern service in a lightweight reusable binary component.</summary>
@@ -30,7 +30,11 @@
             ]]>
         </description>
         <!-- Replaced by https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md -->
-        <releaseNotes />
+        <releaseNotes>v1.0
+* Initial version, with support for flexible matching of from and to types
+* Support for MEF in separate Adapter.Composition package
+* Proper split of: Adapter.Interfaces, Adapter.Sdk and Adapter (implementation).
+</releaseNotes>
         <projectUrl>https://github.org/clariuslabs/adapter</projectUrl>
         <licenseUrl>http://opensource.org/licenses/BSD-2-Clause</licenseUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>

@@ -9,22 +9,15 @@
         <BuildRoot>$(MSBuildProjectDirectory)\..\</BuildRoot>
         <NuGetExe>$(BuildRoot).\nuget\NuGet.exe</NuGetExe>
         <DropDirectory>$(BuildRoot)</DropDirectory>
+        <FrameworkName Condition="'$(FrameworkName)' == ''">net40</FrameworkName>
     </PropertyGroup>
 
+    <ItemGroup>
+        <SupportedFramework Include="net40" />
+        <SupportedFramework Include="net45" />
+    </ItemGroup>
+    
     <Target Name="Test">
-        <ReadAssemblyVersion File="$(BuildRoot)GlobalAssemblyInfo.cs">
-            <Output PropertyName="VersionMajor"
-                    TaskParameter="Major"/>
-            <Output PropertyName="VersionMinor"
-                    TaskParameter="Minor"/>
-            <Output PropertyName="VersionBuild"
-                    TaskParameter="Build"/>
-            <Output PropertyName="VersionRevision"
-                    TaskParameter="Revision"/>
-        </ReadAssemblyVersion>
-
-        <Message Text="Current Version: $(VersionMajor).$(VersionMinor).$(VersionBuild).$(VersionRevision)"
-                 Importance="high" />
     </Target>
 
     <Target Name="Build">
@@ -39,6 +32,10 @@
                     TaskParameter="Revision"/>
         </ReadAssemblyVersion>
 
+        <DownloadString Url="https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md">
+            <Output PropertyName="ReleaseNotes" TaskParameter="Content" />
+        </DownloadString>
+        
         <PropertyGroup>
             <Major>$(VersionMajor)</Major>
             <Minor>$(VersionMinor)</Minor>
@@ -46,42 +43,43 @@
             <Build>$([System.DateTime]::Now.ToString("yyMM"))</Build>
             <!-- Revision number is of the format (2 digit hour)(2 digit minutes) -->
             <Revision>$([System.DateTime]::Now.ToString("ddHH"))</Revision>
-            <FileVersion>$(MajorVersion).$(MinorVersion).$(Build).$(Revision)</FileVersion>
-            <PackageVersion>$(MajorVersion).$(MinorVersion).0</PackageVersion>
+            <FileVersion>$(Major).$(Minor).$(Build).$(Revision)</FileVersion>
+            <!-- TODO: maybe we should have two builds, one that builds the public simplified version
+                 and one with the full build/revision -->
+            <PackageVersion>$(FileVersion)</PackageVersion>
         </PropertyGroup>
 
         <ItemGroup>
-            <RegexTransform Include="$(NuGetSrcRoot)\VsExtension\source.extension.vsixmanifest">
-                <Find><![CDATA[<Version>\d+\.\d+\.\d+\.\d+</Version>]]></Find>
-                <ReplaceWith><![CDATA[<Version>$(Version)</Version>]]></ReplaceWith>
+            <RegexTransform Include="$(BuildRoot)GlobalAssemblyInfo.cs">
+                <Find>AssemblyFileVersion\(".*?"\)</Find>
+                <ReplaceWith>AssemblyFileVersion("$(FileVersion)")</ReplaceWith>
             </RegexTransform>
-            <RegexTransform Include="$(NuGetSrcRoot)\VsExtension\source.extension.vsixmanifest">
-                <Find><![CDATA[<AllUsers>false</AllUsers>]]></Find>
-                <ReplaceWith><![CDATA[<AllUsers>true</AllUsers>]]></ReplaceWith>
+            <RegexTransform Include="$(BuildRoot)\**\*.nuspec">
+                <Find><![CDATA[<version>.*?</version>]]></Find>
+                <ReplaceWith><![CDATA[<version>$(PackageVersion)</version>]]></ReplaceWith>
             </RegexTransform>
-            <RegexTransform Include="$(NuGetRoot)\Common\CommonAssemblyInfo.cs">
-                <Find>AssemblyVersion\("\d+\.\d+\.\d+\.\d+"\)</Find>
-                <ReplaceWith>AssemblyVersion("$(Version)")</ReplaceWith>
-            </RegexTransform>
-            <RegexTransform Include="$(NuGetRoot)\Common\CommonAssemblyInfo.cs">
-                <Find>AssemblyInformationalVersion\("\d+\.\d+\.\d+"\)</Find>
-                <ReplaceWith>AssemblyInformationalVersion("$(PackageVersion)")</ReplaceWith>
-            </RegexTransform>
-            <RegexTransform Include="$(NuGetSrcRoot)\VsConsole\PowerShellHost\Scripts\nuget.psd1">
-                <Find><![CDATA[ModuleVersion = '\d+\.\d+\.\d+\.\d+']]></Find>
-                <ReplaceWith><![CDATA[ModuleVersion = '$(Version)']]></ReplaceWith>
-            </RegexTransform>
-            <RegexTransform Include="$(NuGetSrcRoot)\VsExtension\NuGetPackage.cs">
-                <Find><![CDATA[ProductVersion = "\d+\.\d+\.\d+\.\d+"]]></Find>
-                <ReplaceWith><![CDATA[ProductVersion = "$(Version)"]]></ReplaceWith>
-            </RegexTransform>
-            <RegexTransform Include="$(NuGetSrcRoot)\**\*.nuspec">
-                <Find><![CDATA[<version>\d+\.\d+\.\d+\.\d+</version>]]></Find>
-                <ReplaceWith><![CDATA[<version>$(Version)</version>]]></ReplaceWith>
+            <RegexTransform Include="$(BuildRoot)\**\*.nuspec">
+                <Find><![CDATA[<releaseNotes />]]></Find>
+                <ReplaceWith><![CDATA[<releaseNotes>$(ReleaseNotes)</releaseNotes>]]></ReplaceWith>
             </RegexTransform>
         </ItemGroup>
 
+        <Message Text="Target folder name: $(FrameworkName)" Importance="high" />
+
+        <ParseFrameworkName FrameworkName="$(FrameworkName)" NuGetExe="$(MSBuildThisFileDirectory)..\.nuget\NuGet.exe">
+            <!--<Output TaskParameter="FrameworkName" PropertyName="FrameworkName" />-->
+            <Output TaskParameter="FrameworkString" PropertyName="FrameworkString" />
+            <Output TaskParameter="FrameworkIdentifier" PropertyName="FrameworkIdentifier" />
+            <Output TaskParameter="FrameworkVersion" PropertyName="FrameworkVersion" />
+            <Output TaskParameter="FrameworkProfile" PropertyName="FrameworkProfile" />
+        </ParseFrameworkName>
+
         <RegexTransform Items="@(RegexTransform)" />
+        
+        <Message Text="FrameworkString=$(FrameworkString)" Importance="high" />
+        <Message Text="FrameworkIdentifier=$(FrameworkIdentifier)" Importance="high" />
+        <Message Text="FrameworkVersion=$(FrameworkVersion)" Importance="high" />
+        <Message Text="FrameworkProfile=$(FrameworkProfile)" Importance="high" />
     </Target>
 
     <Target Name="BuildPackages" Condition="false">

@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter", "Adapter\Adapter.csproj", "{F8C7AE23-D170-4852-BF5B-C1C8CB423DF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Sdk", "Adapter.Sdk\Adapter.Sdk.csproj", "{FA9A5CE1-E1F0-4164-8E00-D9734D80C62B}"
@@ -55,8 +55,8 @@ Global
 		{45BF5CD9-3D28-4C36-8FDF-0440067A7EDF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{3B24C89D-BBF4-4490-9963-691AAE989D5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B24C89D-BBF4-4490-9963-691AAE989D5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B24C89D-BBF4-4490-9963-691AAE989D5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
