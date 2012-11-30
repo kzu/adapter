@@ -24,10 +24,4 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
-
-    <ItemGroup>
-	  <None Include="$(SolutionDir)Common\ClariusLabs.licenseheader">
-	    <Link>ClariusLabs.licenseheader</Link>
-	  </None>
-    </ItemGroup>
 </Project>

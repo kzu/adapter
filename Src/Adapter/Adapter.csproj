@@ -32,12 +32,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\ClariusLabs.licenseheader">
+	<None Include="$(SolutionDir)Common\ClariusLabs.licenseheader">
       <Link>ClariusLabs.licenseheader</Link>
-    </None>
-    <None Include="..\ClariusLabs.snk">
-      <Link>ClariusLabs.snk</Link>
-    </None>
+	</None>
     <None Include="Properties\Adapter.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>

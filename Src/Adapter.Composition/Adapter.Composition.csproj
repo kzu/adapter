@@ -41,6 +41,11 @@
       <Name>Adapter</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Common\ClariusLabs.licenseheader">
+      <Link>ClariusLabs.licenseheader</Link>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)Common\ClariusLabs.targets" />
 </Project>
