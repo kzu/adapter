@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter", "Adapter\Adapter.csproj", "{F8C7AE23-D170-4852-BF5B-C1C8CB423DF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter", "Src\Adapter\Adapter.csproj", "{F8C7AE23-D170-4852-BF5B-C1C8CB423DF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Sdk", "Adapter.Sdk\Adapter.Sdk.csproj", "{FA9A5CE1-E1F0-4164-8E00-D9734D80C62B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Sdk", "Src\Adapter.Sdk\Adapter.Sdk.csproj", "{FA9A5CE1-E1F0-4164-8E00-D9734D80C62B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Interfaces", "Adapter.Interfaces\Adapter.Interfaces.csproj", "{45BF5CD9-3D28-4C36-8FDF-0440067A7EDF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Interfaces", "Src\Adapter.Interfaces\Adapter.Interfaces.csproj", "{45BF5CD9-3D28-4C36-8FDF-0440067A7EDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.UnitTests", "Adapter.UnitTests\Adapter.UnitTests.csproj", "{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.UnitTests", "Src\Adapter.UnitTests\Adapter.UnitTests.csproj", "{F5B7EFB9-2FCB-44B1-A1A5-A0E93B76F4AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Composition", "Adapter.Composition\Adapter.Composition.csproj", "{3B24C89D-BBF4-4490-9963-691AAE989D5A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Composition", "Src\Adapter.Composition\Adapter.Composition.csproj", "{3B24C89D-BBF4-4490-9963-691AAE989D5A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E324D78C-BD78-4C65-8EEA-7CE2D6508A1A}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,14 +18,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E324D7
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1A2DD633-F824-483A-996E-D6413EED16AA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{1A2DD633-F824-483A-996E-D6413EED16AA}"
 	ProjectSection(SolutionItems) = preProject
-		ClariusLabs.licenseheader = ClariusLabs.licenseheader
-		ClariusLabs.props = ClariusLabs.props
-		ClariusLabs.targets = ClariusLabs.targets
-		GlobalAssemblyInfo.cs = GlobalAssemblyInfo.cs
-		License.txt = License.txt
-		README.md = README.md
+		Common\ClariusLabs.jpg = Common\ClariusLabs.jpg
+		Common\ClariusLabs.licenseheader = Common\ClariusLabs.licenseheader
+		Common\ClariusLabs.props = Common\ClariusLabs.props
+		Common\ClariusLabs.snk = Common\ClariusLabs.snk
+		Common\ClariusLabs.targets = Common\ClariusLabs.targets
+		Common\License.txt = Common\License.txt
+		Common\nuspec.xsd = Common\nuspec.xsd
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{8BB8E0BB-B4A1-453D-8526-C817371C5CBF}"

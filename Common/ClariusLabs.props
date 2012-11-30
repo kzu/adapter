@@ -3,7 +3,7 @@
     <PropertyGroup>
         <SolutionDir Condition="'$(SolutionDir)' == '' Or '$(SolutionDir)' == '*Undefined*'">$(MSBuildThisFileDirectory)</SolutionDir>
         <SignAssembly>true</SignAssembly>
-        <AssemblyOriginatorKeyFile>$(SolutionDir)ClariusLabs.snk</AssemblyOriginatorKeyFile>
+        <AssemblyOriginatorKeyFile>$(SolutionDir)Common\ClariusLabs.snk</AssemblyOriginatorKeyFile>
         <RestorePackages>true</RestorePackages>
     </PropertyGroup>
     <!-- Common properties -->
@@ -24,5 +24,10 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
-    <!-- NuGet framework name -->
+
+    <ItemGroup>
+	  <None Include="$(SolutionDir)Common\ClariusLabs.licenseheader">
+	    <Link>ClariusLabs.licenseheader</Link>
+	  </None>
+    </ItemGroup>
 </Project>
