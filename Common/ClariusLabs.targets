@@ -12,7 +12,7 @@
 
     <Target Name="PrepareNuGet" AfterTargets="Build" Condition="$(NuGet) == 'true'">
         <ItemGroup>
-            <SymbolSource Include="**\*.cs" Exclude="bin\**\*.cs;netfx\**\*.cs">
+            <SymbolSource Include="**\*.cs" Exclude="bin\**\*.cs">
                 <Visible>False</Visible>
             </SymbolSource>
             <SymbolSource Include="**\*.xaml" Exclude="bin\**\*.xaml">
