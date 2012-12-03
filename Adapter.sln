@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter", "Src\Adapter\Adapter.csproj", "{F8C7AE23-D170-4852-BF5B-C1C8CB423DF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter.Sdk", "Src\Adapter.Sdk\Adapter.Sdk.csproj", "{FA9A5CE1-E1F0-4164-8E00-D9734D80C62B}"
@@ -20,11 +20,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E324D7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{1A2DD633-F824-483A-996E-D6413EED16AA}"
 	ProjectSection(SolutionItems) = preProject
+		Src\Adapter.nuspec = Src\Adapter.nuspec
 		Common\ClariusLabs.jpg = Common\ClariusLabs.jpg
 		Common\ClariusLabs.licenseheader = Common\ClariusLabs.licenseheader
 		Common\ClariusLabs.props = Common\ClariusLabs.props
 		Common\ClariusLabs.snk = Common\ClariusLabs.snk
 		Common\ClariusLabs.targets = Common\ClariusLabs.targets
+		Common\ClariusLabs.tasks = Common\ClariusLabs.tasks
+		Src\GlobalAssemblyInfo.cs = Src\GlobalAssemblyInfo.cs
 		Common\License.txt = Common\License.txt
 		Common\nuspec.xsd = Common\nuspec.xsd
 	EndProjectSection
@@ -33,7 +36,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{8BB8E0BB
 	ProjectSection(SolutionItems) = preProject
 		build.bat = build.bat
 		Build\Build.proj = Build\Build.proj
-		Build\Build.tasks = Build\Build.tasks
 	EndProjectSection
 EndProject
 Global

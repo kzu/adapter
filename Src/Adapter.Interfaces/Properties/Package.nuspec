@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>Adapter.Interfaces</id>
+        <title>Adapter Composition</title>
+        <version>1.0.1212.0319</version>
+        <authors>Daniel Cazzulino</authors>
+        <owners>danielkzu, clariuslabs</owners>
+        <summary>Provides the core interface and extension method As{T} that consumers use, while still being decoupled from the adapters and corresponding service implementation.</summary>
+        <description>
+            <![CDATA[
+            Only two APIs are provided: the IAdapterService and its facade extension method As in the Adapters type.
+            
+            You can chose to use the former service directly instead of the convenience extension method. You don't 
+            lose any testability in doing either way, although you do need to pass around the adapter service in one 
+            case.
+            
+            ======= Example =======
+            // Calling code assumes there is a service always setup before invoking. 
+            // If there isn't, an InvalidOperationException is thrown automatically.
+            
+            // Use adapter extension method As as needed, i.e.            
+            // say we need to use it as an MSBuild project, if possible
+            IMSBuildProject msbuild = project.As<IMSBuildProject>();
+            if (msbuild != null)
+                // do MSBuild stuff with it.
+            ]]>
+        </description>
+        <!-- Replaced by https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md -->
+        <releaseNotes>v1.0
+* Initial version, with support for flexible matching of from and to types
+* Support for MEF in separate Adapter.Composition package
+* Proper split of: Adapter.Interfaces, Adapter.Sdk and Adapter (implementation).
+</releaseNotes>
+        <projectUrl>https://github.org/clariuslabs/adapter</projectUrl>
+        <licenseUrl>http://opensource.org/licenses/BSD-2-Clause</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <tags>patterns adapter</tags>
+        <iconUrl>https://github.com/clariuslabs/adapter/raw/master/ClariusLabs.png</iconUrl>
+        <dependencies>
+        </dependencies>
+    </metadata>
+</package>

@@ -1,7 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(SolutionDir).nuget\nuget.targets" />
-  <Target Name="GetFrameworkName" AfterTargets="GetFrameworkPaths">
-    <Message Text="Retrieving nuget-friendly framework name" Importance="high" />
-  </Target>
+    <!-- VS seems to keep adding this import automatically. Maybe add it via project template instead -->
+    <!--<Import Project="$(SolutionDir).nuget\nuget.targets" />-->
+
+    <Target Name="CopyNuSpec" BeforeTargets="Build" Condition="$(NuGet) == 'true'">
+        <ItemGroup>
+            <NuSpec Include="**\*.nuspec" />
+        </ItemGroup>
+        <Copy SourceFiles="@(NuSpec)" DestinationFolder="$(PackageRoot)" ContinueOnError="false" />
+    </Target>
+
+    <Target Name="PrepareNuGet" AfterTargets="Build" Condition="$(NuGet) == 'true'">
+        <ItemGroup>
+            <SymbolSource Include="**\*.cs" Exclude="bin\**\*.cs;netfx\**\*.cs">
+                <Visible>False</Visible>
+            </SymbolSource>
+            <SymbolSource Include="**\*.xaml" Exclude="bin\**\*.xaml">
+                <Visible>False</Visible>
+            </SymbolSource>
+            <SymbolSource Include="$(IntermediateOutputPath)**\*.cs">
+                <Visible>False</Visible>
+            </SymbolSource>
+        </ItemGroup>
+
+        <Copy SourceFiles="@(SymbolSource)"
+              DestinationFiles="@(SymbolSource->'$(PackageRoot)src\%(RecursiveDir)%(Filename)%(Extension)')"
+              ContinueOnError="false" 
+              SkipUnchangedFiles="true" 
+              OverwriteReadOnlyFiles="true"
+              Retries="$(CopyRetryCount)"
+              RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
+        <Copy SourceFiles="$(SolutionDir)Src\GlobalAssemblyInfo.cs"
+              DestinationFiles="$(PackageRoot)src\Properties\GlobalAssemblyInfo.cs"
+              ContinueOnError="false"
+              SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="true"
+              Retries="$(CopyRetryCount)"
+              RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
+        
+        <!-- Remove output binaries that shouldn't be included in the package -->
+        <ItemGroup>
+            <NonPrimaryAssembly Include="@(FileWrites)" Exclude="@(MainAssembly);@(_DebugSymbolsOutputPath)" />
+        </ItemGroup>
+        
+        <Delete Files="@(NonPrimaryAssembly)" ContinueOnError="false" />
+    </Target>
+
+    <Target Name="AfterClean" AfterTargets="Clean">
+        <ItemGroup>
+            <FileToClean Include="$(PackageRoot)**\*.*" />
+            <FileToClean Include="$(PackageRoot)*.nuspec" />
+        </ItemGroup>
+        
+        <Delete Files="@(FileToClean)" ContinueOnError="true" TreatErrorsAsWarnings="true" />
+        <RemoveDir Directories="$(PackageRoot)lib;$(PackageRoot)src" ContinueOnError="true" />
+    </Target>
+    
 </Project>

@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildThisFileDirectory)ClariusLabs.tasks" />
     <PropertyGroup>
-        <SolutionDir Condition="'$(SolutionDir)' == '' Or '$(SolutionDir)' == '*Undefined*'">$(MSBuildThisFileDirectory)</SolutionDir>
+        <SolutionDir Condition="'$(SolutionDir)' == '' Or '$(SolutionDir)' == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
         <SignAssembly>true</SignAssembly>
-        <AssemblyOriginatorKeyFile>$(SolutionDir)Common\ClariusLabs.snk</AssemblyOriginatorKeyFile>
-        <RestorePackages>true</RestorePackages>
+        <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)ClariusLabs.snk</AssemblyOriginatorKeyFile>
+        <RestorePackages Condition="'$(RestorePackages)' == ''">true</RestorePackages>
+        <FrameworkName Condition="'$(FrameworkName)' == ''">net40</FrameworkName>
+        <NuGetDir>$(SolutionDir).nuget\</NuGetDir>
+        <NuGetExe>$(NuGetDir)NuGet.exe</NuGetExe>
+        <OutputPath>bin\lib\$(FrameworkName)\</OutputPath>
+        <!-- The output package root path is two levels up from the output path, which is the actual lib+target framework -->
+        <PackageRoot>$(OutputPath)..\..\</PackageRoot>
     </PropertyGroup>
     <!-- Common properties -->
     <PropertyGroup Condition="'$(Configuration)' == 'Debug' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
-        <OutputPath>bin\Debug\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
@@ -19,7 +25,6 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Release' ">
         <DebugType>pdbonly</DebugType>
         <Optimize>true</Optimize>
-        <OutputPath>bin\Release\</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>

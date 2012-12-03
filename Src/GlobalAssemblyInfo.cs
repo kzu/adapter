@@ -23,4 +23,21 @@ using System.Reflection;
 [assembly: AssemblyCopyright("Copyright © Clarius Consulting 2012")]
 
 [assembly: AssemblyVersion("1.0")]
-[assembly: AssemblyFileVersion("1.0.1211.3013")]
+[assembly: AssemblyFileVersion("1.0.1212.0319")]
+
+/// <summary>
+/// Shared constants across implementation and interface.
+/// </summary>
+internal static class Constants
+{
+    /// <summary>
+    /// The identifier for the global state that lives in the AppDomain and provides 
+    /// the implementation for the extension method at runtime.
+    /// </summary>
+    public const string GlobalStateIdentifier = "{29938042-C16D-46BA-93D3-F513E88EC345}";
+    /// <summary>
+    /// The identifier for the transient state that lives in an AmbientSingleton that 
+    /// can be used in tests to replace the adapter service.
+    /// </summary>
+    public const string TransientStateIdenfier = "{E0A43955-6A73-4FD7-B30E-3FB699A804EC}";
+}

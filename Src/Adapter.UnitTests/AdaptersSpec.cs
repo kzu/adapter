@@ -1,4 +1,5 @@
-﻿#region BSD License
+﻿using System.Xml.Linq;
+#region BSD License
 /* 
 Copyright (c) 2012, Clarius Consulting
 All rights reserved.
@@ -14,8 +15,38 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace Adapter
 {
+    using System;
+    using Moq;
+    using Xunit;
+    using System.Linq;
 
     public class AdaptersSpec
     {
+        [Fact]
+        public void WhenGlobalServiceSpecified_ThenExtensionMethodUsesIt()
+        {
+            var service = Mock.Of<IAdapterService>();
+            AdaptersInitializer.SetService(service);
+
+            Mock.Of<IFoo>().As<IBar>();
+
+            Mock.Get(service).Verify(x => x.As<IBar>(It.IsAny<IFoo>()));
+        }
+
+        [Fact]
+        public void WhenTransientServiceSpecified_ThenOverridesGlobalService()
+        {
+            var transient = Mock.Of<IAdapterService>();
+
+            using (AdaptersInitializer.SetTransientService(transient))
+            {
+                Mock.Of<IFoo>().As<IBar>();
+
+                Mock.Get(transient).Verify(x => x.As<IBar>(It.IsAny<IFoo>()));
+            }
+        }
+
+        public interface IFoo { }
+        public interface IBar { }
     }
 }

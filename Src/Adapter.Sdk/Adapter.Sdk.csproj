@@ -16,7 +16,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(SolutionDir)Src\GlobalAssemblyInfo.cs">
@@ -29,6 +28,7 @@
     <None Include="..\..\Common\ClariusLabs.licenseheader">
       <Link>ClariusLabs.licenseheader</Link>
     </None>
+    <None Include="Properties\Package.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)Common\ClariusLabs.targets" />

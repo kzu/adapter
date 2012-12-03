@@ -23,8 +23,9 @@ namespace Adapter
     /// </summary>
     public static class Adapters
     {
-        private static IAdapterService service;
-        private static readonly AmbientSingleton<IAdapterService> transientService = new AmbientSingleton<IAdapterService>();
+        // AppDomain-wise global static service instance that is set with the same GUID from the AdapterService implementation.
+        private static Lazy<IAdapterService> service = new Lazy<IAdapterService>(() => (IAdapterService)AppDomain.CurrentDomain.GetData(Constants.GlobalStateIdentifier));
+        private static readonly AmbientSingleton<IAdapterService> transientService = new AmbientSingleton<IAdapterService>(new Guid(Constants.TransientStateIdenfier));
 
         /// <summary>
         /// Tries to adapt the given <paramref name="source"/> to the requested <typeparamref name="T"/>.
@@ -36,32 +37,11 @@ namespace Adapter
             return AdapterService.As<T>(source);
         }
 
-        /// <summary>
-        /// Sets the singleton adapter service instance to use to implement the 
-        /// <see cref="As"/> extension method for the entire lifetime of the 
-        /// current application domain.
-        /// </summary>
-        public static void SetService(IAdapterService service)
-        {
-            Adapters.service = service;
-        }
-
-        /// <summary>
-        /// Sets up a transient adapter service that remains active during 
-        /// an entire call chain, even across code that spawns new threads 
-        /// or tasks, but does not overwrite the global singleton service 
-        /// specified via <see cref="SetService"/>.
-        /// </summary>
-        public static void SetTransientService(IAdapterService service)
-        {
-            transientService.Value = service;
-        }
-
         private static IAdapterService AdapterService
         {
             get
             {
-                var implementation = transientService.Value ?? service;
+                var implementation = transientService.Value ?? service.Value;
                 if (implementation == null)
                     throw new InvalidOperationException("No adapter service has been set.");
 

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>Adapter.Composition</id>
+        <title>Adapter Composition</title>
+        <version>1.0.1212.0319</version>
+        <authors>Daniel Cazzulino</authors>
+        <owners>danielkzu, clariuslabs</owners>
+        <summary>Provides a MEF-friendly implementation that can be automatically initialized with exported adapters in the container.</summary>
+        <description>
+            <![CDATA[
+            The provided ComposedAdapterService exports the IAdapterService interface, and "imports many" IAdapter implementations.
+            
+            Initialize your composition container so that it contains both the exported adapters and the adapter service, and it 
+            will be initialized automatically for use.
+            
+            ======= Example =======
+            // Initialize container with your assemblies/types/catalogs
+            CompositionContainer container = new CompositionContainer(catalog);
+            
+            // Retrieve initialized adapter service
+            IAdapterService service = container.GetExportedValue<IAdapterService>();
+            
+            // Initialize the adapter facade with the service
+            Adapters.SetService(service);
+            
+            // Use adapter extension method As as needed, i.e.            
+            // say we need to use it as an MSBuild project, if possible
+            IMSBuildProject msbuild = project.As<IMSBuildProject>();
+            if (msbuild != null)
+                // do MSBuild stuff with it.
+                
+            ======= Adapters =======
+            [Export(typeof(IAdapter))]
+            public class ProjectToMsBuildAdapter : IAdapter<IProject, IMSBuildProject>
+            {
+                // Implement actual conversion.
+            }
+
+            Simply by exporting the right contract, the adapter service will locate it.
+            Note that to create adapter implementations, you need to install the Adapter.Sdk package.
+            ]]>
+        </description>
+        <!-- Replaced by https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md -->
+        <releaseNotes>v1.0
+* Initial version, with support for flexible matching of from and to types
+* Support for MEF in separate Adapter.Composition package
+* Proper split of: Adapter.Interfaces, Adapter.Sdk and Adapter (implementation).
+</releaseNotes>
+        <projectUrl>https://github.org/clariuslabs/adapter</projectUrl>
+        <licenseUrl>http://opensource.org/licenses/BSD-2-Clause</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <tags>patterns adapter</tags>
+        <iconUrl>https://github.com/clariuslabs/adapter/raw/master/ClariusLabs.png</iconUrl>
+        <dependencies>
+        </dependencies>
+    </metadata>
+</package>

@@ -1,32 +1,24 @@
 <?xml version="1.0"?>
-<package>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
-        <id>Adapter</id>
-        <title>Adapter</title>
-        <version>1.0.1211.3013</version>
+        <id>Adapter.Sdk</id>
+        <title>Adapter SDK</title>
+        <version>1.0.1212.0319</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>
-        <summary>Provides the implementation of an adapter pattern service in a lightweight reusable binary component.</summary>
+        <summary>Provides the IAdapter interface that adapter implementations provide for the service.</summary>
         <description>
             <![CDATA[
-            The provided adapter pattern allows to convert any object to any other supported type, as provided by the registered adapters.
-            
-            This package provides the actual implementation of the service. It should only be added to the bootstrapping component of your application.
+            The only contract provided by this assembly is the IAdapter interface. This is the interface that 
+            the adapter service implementation interacts with. As such, the SDK does not have any other 
+            external dependencies, since it's the adapter service that consumes this interface. The client-facing 
+            code does not need to know about adapters either.
             
             ======= Example =======
-            IProject project = GetCurrentProject();
-            // say we need to use it as an MSBuild project, if possible
-            IMSBuildProject msbuild = project.As<IMSBuildProject>();
-            if (msbuild != null)
-                // do MSBuild stuff with it.
-            ======= Adapters =======
             public class ProjectToMsBuildAdapter : IAdapter<IProject, IMSBuildProject>
             {
                 // Implement actual conversion.
             }
-
-            The conversion behavior is now decoupled from the usage.
-            Note that to author adapters, you need to install the Adapter.Sdk package.
             ]]>
         </description>
         <!-- Replaced by https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md -->
@@ -40,5 +32,7 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <tags>patterns adapter</tags>
         <iconUrl>https://github.com/clariuslabs/adapter/raw/master/ClariusLabs.png</iconUrl>
+        <dependencies>
+        </dependencies>
     </metadata>
 </package>

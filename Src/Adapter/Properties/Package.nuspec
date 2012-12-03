@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>Adapter.Implementation</id>
+        <title>Adapter</title>
+        <version>1.0.1212.0319</version>
+        <authors>Daniel Cazzulino</authors>
+        <owners>danielkzu, clariuslabs</owners>
+        <summary>Provides the implementation of an adapter pattern service in a lightweight reusable binary component.</summary>
+        <description>
+            <![CDATA[
+            The provided adapter pattern allows to convert any object to any other supported type, as provided by the registered adapters.
+            
+            This package provides the actual implementation of the service. It should only be added to the bootstrapping component of your application.
+            
+            ======= Example =======
+            IProject project = GetCurrentProject();
+            // say we need to use it as an MSBuild project, if possible
+            IMSBuildProject msbuild = project.As<IMSBuildProject>();
+            if (msbuild != null)
+                // do MSBuild stuff with it.
+            ======= Adapters =======
+            public class ProjectToMsBuildAdapter : IAdapter<IProject, IMSBuildProject>
+            {
+                // Implement actual conversion.
+            }
+
+            The conversion behavior is now decoupled from the usage.
+            Note that to create adapter implementations, you need to install the Adapter.Sdk package.
+            ]]>
+        </description>
+        <!-- Replaced by https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md -->
+        <releaseNotes>v1.0
+* Initial version, with support for flexible matching of from and to types
+* Support for MEF in separate Adapter.Composition package
+* Proper split of: Adapter.Interfaces, Adapter.Sdk and Adapter (implementation).
+</releaseNotes>
+        <projectUrl>https://github.org/clariuslabs/adapter</projectUrl>
+        <licenseUrl>http://opensource.org/licenses/BSD-2-Clause</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <tags>patterns adapter</tags>
+        <iconUrl>https://github.com/clariuslabs/adapter/raw/master/ClariusLabs.png</iconUrl>
+        <dependencies>
+        </dependencies>
+    </metadata>
+</package>

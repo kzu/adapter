@@ -2,26 +2,49 @@
 <Project ToolsVersion="4.0"
          DefaultTargets="Build"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildProjectDirectory)\Build.tasks" />
+    <Import Project="$(MSBuildThisFileDirectory)..\Common\ClariusLabs.tasks" />
+    <Import Project="$(MSBuildThisFileDirectory)..\.nuget\NuGet.targets" />
 
     <PropertyGroup>
         <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-        <BuildRoot>$(MSBuildProjectDirectory)\..\</BuildRoot>
-        <NuGetExe>$(BuildRoot).\nuget\NuGet.exe</NuGetExe>
-        <DropDirectory>$(BuildRoot)</DropDirectory>
-        <FrameworkName Condition="'$(FrameworkName)' == ''">net40</FrameworkName>
+        <BuildRoot>$(MSBuildThisFileDirectory)..\</BuildRoot>
+        <NuGetExe>$(BuildRoot).nuget\NuGet.exe</NuGetExe>
+        <DropDirectory>$(BuildRoot)Drop\</DropDirectory>
     </PropertyGroup>
 
     <ItemGroup>
         <SupportedFramework Include="net40" />
         <SupportedFramework Include="net45" />
     </ItemGroup>
-    
-    <Target Name="Test">
+
+    <PropertyGroup>
+        <BuildDependsOn>
+            $(BuildDependsOn);
+            RestorePackages;
+            ReplaceCurrentVersions;
+            BuildTargetFramework;
+        </BuildDependsOn>
+    </PropertyGroup>
+
+    <Target Name="Build" DependsOnTargets="$(BuildDependsOn)">
+        <ItemGroup>
+            <PackageSpec Include="$(BuildRoot)Src\*\bin\*.nuspec" />
+        </ItemGroup>
+
+        <MakeDir Condition="!Exists('$(DropDirectory)')" Directories="$(DropDirectory)" />
+        <Delete Files="$(DropDirectory)*.*" ContinueOnError="false" />
+        
+        <!-- First build the aggregate package -->
+        <Copy SourceFiles="$(BuildRoot)Src\Adapter.nuspec" DestinationFolder="$(DropDirectory)" ContinueOnError="false" SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="true" Retries="$(CopyRetryCount)" RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
+        <Exec Command="$(NuGetExe) pack -NoPackageAnalysis $(DropDirectory)Adapter.nuspec -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
+        <Delete Files="$(DropDirectory)Adapter.nuspec" ContinueOnError="false" />
+
+        <Exec Command="$(NuGetExe) pack -NoPackageAnalysis %(PackageSpec.FullPath) -Symbols -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
     </Target>
 
-    <Target Name="Build">
-        <ReadAssemblyVersion File="$(BuildRoot)GlobalAssemblyInfo.cs">
+    <Target Name="ReplaceCurrentVersions">
+        <ReadAssemblyVersion File="$(BuildRoot)Src\GlobalAssemblyInfo.cs">
             <Output PropertyName="VersionMajor"
                     TaskParameter="Major"/>
             <Output PropertyName="VersionMinor"
@@ -32,10 +55,12 @@
                     TaskParameter="Revision"/>
         </ReadAssemblyVersion>
 
-        <DownloadString Url="https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md">
-            <Output PropertyName="ReleaseNotes" TaskParameter="Content" />
+        <DownloadString Url="https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md"
+                        ContinueOnError="true">
+            <Output PropertyName="ReleaseNotes"
+                    TaskParameter="Content" />
         </DownloadString>
-        
+
         <PropertyGroup>
             <Major>$(VersionMajor)</Major>
             <Minor>$(VersionMinor)</Minor>
@@ -50,54 +75,37 @@
         </PropertyGroup>
 
         <ItemGroup>
-            <RegexTransform Include="$(BuildRoot)GlobalAssemblyInfo.cs">
+            <RegexTransform Include="$(BuildRoot)Src\GlobalAssemblyInfo.cs">
                 <Find>AssemblyFileVersion\(".*?"\)</Find>
                 <ReplaceWith>AssemblyFileVersion("$(FileVersion)")</ReplaceWith>
             </RegexTransform>
-            <RegexTransform Include="$(BuildRoot)\**\*.nuspec">
+            <RegexTransform Include="$(BuildRoot)**\*.nuspec">
                 <Find><![CDATA[<version>.*?</version>]]></Find>
                 <ReplaceWith><![CDATA[<version>$(PackageVersion)</version>]]></ReplaceWith>
             </RegexTransform>
-            <RegexTransform Include="$(BuildRoot)\**\*.nuspec">
+            <RegexTransform Include="$(BuildRoot)**\*.nuspec"
+                            Condition="'$(ReleaseNotes)' != ''">
                 <Find><![CDATA[<releaseNotes />]]></Find>
                 <ReplaceWith><![CDATA[<releaseNotes>$(ReleaseNotes)</releaseNotes>]]></ReplaceWith>
             </RegexTransform>
+            <!-- Replace dependency versions in the aggregated package -->
+            <RegexTransform Include="$(BuildRoot)Src\Adapter.nuspec">
+                <Find><![CDATA[version=".*?"]]></Find>
+                <ReplaceWith><![CDATA[version="$(PackageVersion)"]]></ReplaceWith>
+            </RegexTransform>
         </ItemGroup>
 
-        <Message Text="Target folder name: $(FrameworkName)" Importance="high" />
+        <RegexTransform Items="@(RegexTransform)" />
+    </Target>
 
-        <ParseFrameworkName FrameworkName="$(FrameworkName)" NuGetExe="$(MSBuildThisFileDirectory)..\.nuget\NuGet.exe">
-            <!--<Output TaskParameter="FrameworkName" PropertyName="FrameworkName" />-->
-            <Output TaskParameter="FrameworkString" PropertyName="FrameworkString" />
-            <Output TaskParameter="FrameworkIdentifier" PropertyName="FrameworkIdentifier" />
-            <Output TaskParameter="FrameworkVersion" PropertyName="FrameworkVersion" />
-            <Output TaskParameter="FrameworkProfile" PropertyName="FrameworkProfile" />
+    <Target Name="BuildTargetFramework">
+        <ParseFrameworkName FrameworkName="%(SupportedFramework.Identity)" NuGetExe="$(NuGetExe)">
+            <Output TaskParameter="FrameworkSpec" ItemName="TargetFramework" />
         </ParseFrameworkName>
 
-        <RegexTransform Items="@(RegexTransform)" />
-        
-        <Message Text="FrameworkString=$(FrameworkString)" Importance="high" />
-        <Message Text="FrameworkIdentifier=$(FrameworkIdentifier)" Importance="high" />
-        <Message Text="FrameworkVersion=$(FrameworkVersion)" Importance="high" />
-        <Message Text="FrameworkProfile=$(FrameworkProfile)" Importance="high" />
+        <MSBuild Projects="$(BuildRoot)Adapter.sln"
+    			 Properties="NuGet=true;RestorePackages=false;FrameworkName=%(TargetFramework.Name);TargetFrameworkIdentifier=%(TargetFramework.Identifier);TargetFrameworkVersion=%(TargetFramework.Version);TargetFrameworkProfile=%(TargetFramework.Profile)"
+    			 Targets="Build" />
     </Target>
 
-    <Target Name="BuildPackages" Condition="false">
-        <PropertyGroup>
-            <NuGetExe>$(ExeDropDirectory)\NuGet.exe</NuGetExe>
-        </PropertyGroup>
-
-        <Exec Command="&quot;$(NuGetExe)&quot; pack NuGet.CommandLine.nuspec -NoPackageAnalysis -Version $(PackageVersion)"
-              WorkingDirectory="$(ExeDropDirectory)" />
-        <Exec Command="&quot;$(NuGetExe)&quot; pack NuGet.Bootstrapper.nuspec -NoPackageAnalysis -Version $(PackageVersion)"
-              WorkingDirectory="$(ExeDropDirectory)" />
-        <Exec Command="&quot;$(NuGetExe)&quot; pack -NoPackageAnalysis -Version $(PackageVersion) -o &quot;$(ServerDropDirectory)&quot; -Build -p AdditionalSettingsImport=$(AdditionalSettingsImport) -p Configuration=Release -Symbols -exclude **\NuGet.Core.*"
-              WorkingDirectory="$(ServerBuildDirectory)" />
-        <Exec Command="&quot;$(NuGetExe)&quot; pack -NoPackageAnalysis -Version $(PackageVersion) -o &quot;$(NuGetCoreDropDirectory)&quot; -Build -Symbols -p AdditionalSettingsImport=$(AdditionalSettingsImport)"
-              WorkingDirectory="$(NuGetCoreBuildDirectory)" />
-        <Exec Command="&quot;$(NuGetExe)&quot; pack -NoPackageAnalysis -Version $(PackageVersion) -o &quot;$(NuGetBuildDropDirectory)&quot;"
-              WorkingDirectory="$(NuGetSrcRoot)\Build" />
-        <Exec Command="&quot;$(NuGetExe)&quot; pack -NoPackageAnalysis -Version $(PackageVersion) -o &quot;$(NuGetVisualStudioDropDirectory)&quot; -Build -p AdditionalSettingsImport=$(AdditionalSettingsImport)"
-              WorkingDirectory="$(NuGetVisualStudioBuildDirectory)" />
-    </Target>
 </Project>
