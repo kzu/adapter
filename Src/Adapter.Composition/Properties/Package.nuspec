@@ -3,7 +3,7 @@
     <metadata>
         <id>Adapter.Composition</id>
         <title>Adapter Composition</title>
-        <version>1.0.1212.0319</version>
+        <version>1.0.1212.0501</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>
         <summary>Provides a MEF-friendly implementation that can be automatically initialized with exported adapters in the container.</summary>
@@ -42,17 +42,20 @@
             ]]>
         </description>
         <!-- Replaced by https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md -->
-        <releaseNotes>v1.0
+        <releaseNotes>v1.1
+* Additional support for source packages, like Adapter.Interfaces.Source,
+  which also use token replacement and adopt the containing project 
+  root namespace.
+
+v1.0
 * Initial version, with support for flexible matching of from and to types
 * Support for MEF in separate Adapter.Composition package
-* Proper split of: Adapter.Interfaces, Adapter.Sdk and Adapter (implementation).
-</releaseNotes>
+* Proper split of: Adapter.Interfaces, Adapter.Sdk and Adapter (implementation).</releaseNotes>
         <projectUrl>https://github.org/clariuslabs/adapter</projectUrl>
         <licenseUrl>http://opensource.org/licenses/BSD-2-Clause</licenseUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <tags>patterns adapter</tags>
         <iconUrl>https://github.com/clariuslabs/adapter/raw/master/ClariusLabs.png</iconUrl>
-        <dependencies>
-        </dependencies>
+        <dependencies/>
     </metadata>
 </package>

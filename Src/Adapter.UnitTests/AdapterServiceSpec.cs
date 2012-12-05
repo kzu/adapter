@@ -12,7 +12,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 #endregion
 
-namespace Adapter
+namespace Patterns.Adapter
 {
     using System;
     using Moq;

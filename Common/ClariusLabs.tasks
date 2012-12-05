@@ -2,16 +2,49 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
     ============================================================
+				LogItem
+
+    Logs all of the input item properties.
+    ============================================================
+    -->
+    <UsingTask TaskName="Log"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System.Linq"/>
+            <Code Type="Fragment"
+                  Language="cs">
+                <![CDATA[
+                foreach (var item in this.Items)
+                {
+                    Log.LogMessage("ItemSpec={0}", item.ItemSpec);
+                    foreach (var name in item.MetadataNames.OfType<string>())
+                    {
+                        Log.LogMessage("{0}={1}", name, item.GetMetadata(name));
+                    }
+                }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <!--
+    ============================================================
 				RegexTransform
 
     Transforms the input Items parameter by evaluating the 
     regular expression in their Find metadata and 
-    replacing with their ReplaceWith metadata.
+    replacing with their ReplaceWith metadata. Optional, the 
+    options for the regular expression evaluation can be specified.
     
     Example input item:
             <RegexTransform Include="$(BuildRoot)Src\GlobalAssemblyInfo.cs">
                 <Find>AssemblyFileVersion\(".*?"\)</Find>
                 <ReplaceWith>AssemblyFileVersion("$(FileVersion)")</ReplaceWith>
+                <Options>Multiline | IgnorePatternWhitespace</Options>
             </RegexTransform>
     
     Invoking the target:
@@ -36,10 +69,15 @@
              string fileName = item.GetMetadata("FullPath");
              string find = item.GetMetadata("Find");
              string replaceWith = item.GetMetadata("ReplaceWith");
+             string optionsValue = item.GetMetadata("Options") ?? "";
              
+             var options = optionsValue.Split(new [] { '|' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => (RegexOptions)Enum.Parse(typeof(RegexOptions), s.Trim()))
+                .Aggregate(RegexOptions.None, (current, option) => current | option);
+
              if(!File.Exists(fileName))
              {
-               Log.LogError(null, null, null, null, 0, 0, 0, 0, String.Format("Could not find version file: {0}", fileName), new object[0]);
+               Log.LogError("Could not find file: {0}", fileName);
                return false;
              }
              string content = File.ReadAllText(fileName);
@@ -48,7 +86,8 @@
                Regex.Replace(
                  content,
                  find,
-                 replaceWith
+                 replaceWith, 
+                 options
                )
              );
            }
@@ -112,13 +151,13 @@ if (match.Groups["revision"].Success)
 				ParseFrameworkName
 
     Parses the input FrameworkName which is the simplified folder
-    name format used by NuGet, into the following output 
-    parameters:
-        * FrameworkString: the full target framework moniker, 
-          i.e. ".NETFramework,Version=v4.0,Profile=Client"
-        * FrameworkIdentifier: i.e. ".NETFramework", "Silverlight" etc.
-        * FrameworkVersion: i.e. "v4.0", "v4.5"
-        * FrameworkProfile: i.e. "Client"
+    name format used by NuGet, into an output item property 
+    named FrameworkSpec with the following metadata:
+        * Name: the value of the input FrameworkName
+        * Moniker: the full target framework moniker, i.e. ".NETFramework,Version=v4.0,Profile=Client"
+        * Identifier: i.e. ".NETFramework", "Silverlight", etc.
+        * Version: i.e. "v4.0", "v4.5"
+        * Profile: i.e. "Client"
         
     Read more at http://blogs.msdn.com/b/visualstudio/archive/2010/05/19/visual-studio-managed-multi-targeting-part-1-concepts-target-framework-moniker-target-framework.aspx
     ============================================================
@@ -130,10 +169,6 @@ if (match.Groups["revision"].Success)
             <NuGetExe Required="true" />
             <FrameworkName Required="true" />
             <FrameworkSpec ParameterType="Microsoft.Build.Framework.ITaskItem" Output="true" />
-            <!--<FrameworkMoniker Output="true" />
-            <FrameworkIdentifier Output="true" />
-            <FrameworkVersion Output="true" />
-            <FrameworkProfile Output="true" />-->
         </ParameterGroup>
         <Task>
             <Using Namespace="System.Reflection" />
@@ -156,11 +191,6 @@ if (match.Groups["revision"].Success)
                     { "Version", name.Version.ToString() }, 
                     { "Profile", name.Profile }
                 });
-               
-               //this.FrameworkMoniker = (string)utility.InvokeMember("GetFrameworkString", flags, null, null, new object[] { name });
-               //this.FrameworkIdentifier = name.Identifier;
-               //this.FrameworkVersion = name.Version.ToString();
-               //this.FrameworkProfile = name.Profile;
          ]]>
             </Code>
         </Task>
@@ -185,25 +215,25 @@ if (match.Groups["revision"].Success)
 
     <!--
     ============================================================
-				ParseNuGetSpec
+				AssignNuGetSpec
 
-    Reads the a .nuspec file from the File input and returns the 
-    following values from it:
+    Augments the input .nuspec item from Spec input by adding
+    following metadata to it:
         * Id
         * Version
     ============================================================
     -->
-    <UsingTask TaskName="ParseNuGetSpec"
+    <UsingTask TaskName="AssignNuGetSpec"
                TaskFactory="CodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
         <ParameterGroup>
-            <File Required="true" />
-            <Id Output="true" />
-            <Version Output="true" />
+            <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true"/>
+            <Result ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true"/>
         </ParameterGroup>
         <Task>
             <Reference Include="System.Xml"/>
             <Reference Include="System.Xml.Linq"/>
+            <Using Namespace="System.Collections.Generic"/>
             <Using Namespace="System.IO"/>
             <Using Namespace="System.Linq"/>
             <Using Namespace="System.Xml"/>
@@ -211,12 +241,26 @@ if (match.Groups["revision"].Success)
             <Code Type="Fragment"
                   Language="cs">
                 <![CDATA[
-var spec = XDocument.Load(this.File);
-var metadata = spec.Root.Elements().First();
-this.Id = metadata.Elements().First(x => x.Name.LocalName == "id").Value;
-this.Version = metadata.Elements().First(x => x.Name.LocalName == "version").Value;
-]]>
+                var output = new List<ITaskItem>();
+                foreach (var item in this.Items)
+                {
+                    var spec = XDocument.Load(item.GetMetadata("FullPath"));
+                    var metadata = spec.Root.Elements().First();
+                    
+                    var result = new TaskItem(item.ItemSpec, new Dictionary<string, string>
+                    {
+                        { "Id", metadata.Elements().First(x => x.Name.LocalName == "id").Value },
+                        { "Version", metadata.Elements().First(x => x.Name.LocalName == "version").Value },
+                    });
+
+                    item.CopyMetadataTo(result);
+                    output.Add(result);
+                }
+                
+                this.Result = output.ToArray();
+                ]]>
             </Code>
         </Task>
     </UsingTask>
+
 </Project>

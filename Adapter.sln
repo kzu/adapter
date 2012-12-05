@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{1A2DD633-F824-483A-996E-D6413EED16AA}"
 	ProjectSection(SolutionItems) = preProject
 		Src\Adapter.nuspec = Src\Adapter.nuspec
+		Src\Adapter.Source.nuspec = Src\Adapter.Source.nuspec
 		Common\ClariusLabs.jpg = Common\ClariusLabs.jpg
 		Common\ClariusLabs.licenseheader = Common\ClariusLabs.licenseheader
 		Common\ClariusLabs.props = Common\ClariusLabs.props
@@ -28,14 +29,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{1A2DD6
 		Common\ClariusLabs.targets = Common\ClariusLabs.targets
 		Common\ClariusLabs.tasks = Common\ClariusLabs.tasks
 		Src\GlobalAssemblyInfo.cs = Src\GlobalAssemblyInfo.cs
-		Common\License.txt = Common\License.txt
 		Common\nuspec.xsd = Common\nuspec.xsd
+		ReleaseNotes.md = ReleaseNotes.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{8BB8E0BB-B4A1-453D-8526-C817371C5CBF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0A7D82D5-2887-40F0-B3A6-0E89087593DC}"
 	ProjectSection(SolutionItems) = preProject
 		build.bat = build.bat
 		Build\Build.proj = Build\Build.proj
+		License.txt = License.txt
+		README.md = README.md
+		ReleaseNotes.md = ReleaseNotes.md
 	EndProjectSection
 EndProject
 Global

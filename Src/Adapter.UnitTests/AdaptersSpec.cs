@@ -19,8 +19,10 @@ namespace Patterns.Adapter
     using Xunit;
     using System.Linq;
     using Microsoft.Build.Utilities;
-using System.Collections.Generic;
+    using System.Collections.Generic;
     using System.Xml.Linq;
+    using System.IO;
+    using System.Text.RegularExpressions;
 
     public class AdaptersSpec
     {
@@ -42,11 +44,9 @@ using System.Collections.Generic;
         //</packages>
 
         //<dependencies>
-        //    <group targetFramework="net40">
-        //        <dependency id="" version=""/>
-        //    </group>
+        //    <dependency id="" version=""/>
         //</dependencies>
-
+            
             foreach (var item in this.Items)
             {
                 var config = XDocument.Load(item.GetMetadata("FullPath"));
@@ -57,20 +57,26 @@ using System.Collections.Generic;
                         Version = x.Attribute("version").Value,
                         TargetFramework = x.Attribute("targetFramework").Value
                     })
-                    .GroupBy(x => x.TargetFramework)
                     .Select(x => string.Format(
-"\r\n            <group targetFramework=\"{0}\">", x.Key) + 
-                        string.Join("", x.Select(d => string.Format(
-                            "\r\n                <dependency id=\"{0}\" version=\"{1}\"/>", d.Id, d.Version))) +
-"\r\n            <\\group>");
+                        "\r\n                <dependency id=\"{0}\" version=\"{1}\"/>", x.Id, x.Version));
 
                 var dependencies = 
-                    "        <dependencies>" + 
+                    "<dependencies>" + 
                                 string.Join("", packages) +
                     "\r\n        </dependencies>";
 
-                Console.WriteLine("Dependencies");
-                Console.WriteLine(dependencies);
+                File.WriteAllText(
+                  item.GetMetadata("NuSpec"),
+                  Regex.Replace(
+                    File.ReadAllText(item.GetMetadata("NuSpec")),
+                    "<dependencies />|<dependencies/>|<dependencies>.*</dependencies>",
+                    dependencies,
+                    RegexOptions.Singleline
+                  )
+                );
+
+                Console.WriteLine("Spec");
+                Console.WriteLine(File.ReadAllText(item.GetMetadata("NuSpec")));
             }
         }
 

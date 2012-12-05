@@ -3,13 +3,66 @@
          DefaultTargets="Build"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <Import Project="$(MSBuildThisFileDirectory)..\Common\ClariusLabs.tasks" />
+    <UsingTask TaskName="AddDependencies"
+               TaskFactory="CodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+        <ParameterGroup>
+            <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.Xml"/>
+            <Reference Include="System.Xml.Linq"/>
+            <Using Namespace="System.IO"/>
+            <Using Namespace="System.Linq"/>
+            <Using Namespace="System.Xml"/>
+            <Using Namespace="System.Xml.Linq"/>
+            <Using Namespace="System.Text.RegularExpressions"/>
+            <Code Type="Fragment"
+                  Language="cs">
+                <![CDATA[
+                foreach (var item in this.Items)
+                {
+                    var config = XDocument.Load(item.GetMetadata("FullPath"));
+                    var packages = config.Root.Elements()
+                        .Select(x => new
+                        {
+                            Id = x.Attribute("id").Value,
+                            Version = x.Attribute("version").Value,
+                            TargetFramework = x.Attribute("targetFramework").Value
+                        })
+                        .Select(x => string.Format(
+                            "\r\n                <dependency id=\"{0}\" version=\"{1}\"/>", x.Id, x.Version));
+
+                    var dependencies = 
+                        "<dependencies>" + 
+                                    string.Join("", packages) +
+                        "\r\n        </dependencies>";
+
+                    File.WriteAllText(
+                      item.GetMetadata("NuSpec"),
+                      Regex.Replace(
+                        File.ReadAllText(item.GetMetadata("NuSpec")),
+                        "<dependencies />|<dependencies/>|<dependencies>.*</dependencies>",
+                        dependencies,
+                        RegexOptions.Singleline
+                      )
+                    );
+                }
+                ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+    
     <Import Project="$(MSBuildThisFileDirectory)..\.nuget\NuGet.targets" />
 
     <PropertyGroup>
         <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
         <BuildRoot>$(MSBuildThisFileDirectory)..\</BuildRoot>
         <NuGetExe>$(BuildRoot).nuget\NuGet.exe</NuGetExe>
-        <DropDirectory>$(BuildRoot)Drop\</DropDirectory>
+        <DropDirectory>$(MSBuildThisFileDirectory)Drop\</DropDirectory>
+        <PackagesInclude>$(BuildRoot)Src\*\bin\*.nuspec</PackagesInclude>
+        <!--<PackagesInclude>$(BuildRoot)Src\Adapter.Interfaces\bin\Package.nuspec</PackagesInclude>-->
+        <ReleaseNotes>$([System.IO.File]::ReadAllText('$(BuildRoot)ReleaseNotes.md'))</ReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,23 +70,54 @@
         <SupportedFramework Include="net45" />
     </ItemGroup>
 
+    <!--
+    -->
+
     <PropertyGroup>
         <BuildDependsOn>
             $(BuildDependsOn);
+            PrepareDropLocation;
             RestorePackages;
             ReplaceCurrentVersions;
             BuildTargetFramework;
+            PreparePackages;
+            BuildBinaryPackages;
+            BuildSourcePackages;
         </BuildDependsOn>
     </PropertyGroup>
 
-    <Target Name="Build" DependsOnTargets="$(BuildDependsOn)">
+    <Target Name="Clean">
+        <Delete Files="$(DropDirectory)**\*.*" ContinueOnError="true" />
+        <RemoveDir Directories="$(DropDirectory)" />
+
         <ItemGroup>
-            <PackageSpec Include="$(BuildRoot)Src\*\bin\*.nuspec" />
+            <PackageSpec Include="$(PackagesInclude)" />
         </ItemGroup>
 
+        <Delete Files="@(PackageSpec->'%(RootDir)%(Directory)**\*.*')" ContinueOnError="true" />
+        <RemoveDir Directories="@(PackageSpec->'%(RootDir)%(Directory)')" ContinueOnError="true" />
+    </Target>
+
+    <Target Name="Build" DependsOnTargets="$(BuildDependsOn)">
+        
+    </Target>
+    
+    <Target Name="PrepareDropLocation">
         <MakeDir Condition="!Exists('$(DropDirectory)')" Directories="$(DropDirectory)" />
         <Delete Files="$(DropDirectory)*.*" ContinueOnError="false" />
-        
+    </Target>
+
+    <Target Name="PreparePackages">
+        <ItemGroup>
+            <_PackageSpec Include="$(PackagesInclude)" />
+        </ItemGroup>
+
+        <AssignNuGetSpec Items="@(_PackageSpec)">
+            <Output ItemName="PackageSpec" TaskParameter="Result"/>
+        </AssignNuGetSpec>
+    </Target>
+    
+    <Target Name="BuildBinaryPackages">
         <!-- First build the aggregate package -->
         <Copy SourceFiles="$(BuildRoot)Src\Adapter.nuspec" DestinationFolder="$(DropDirectory)" ContinueOnError="false" SkipUnchangedFiles="true"
               OverwriteReadOnlyFiles="true" Retries="$(CopyRetryCount)" RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
@@ -43,6 +127,35 @@
         <Exec Command="$(NuGetExe) pack -NoPackageAnalysis %(PackageSpec.FullPath) -Symbols -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
     </Target>
 
+    <Target Name="BuildSourcePackages" DependsOnTargets="CopySourceAsContent;AddPackageDependencies">
+        <!-- First build the aggregate source package -->
+        <Copy SourceFiles="$(BuildRoot)Src\Adapter.Source.nuspec" DestinationFolder="$(DropDirectory)" ContinueOnError="false" SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="true" Retries="$(CopyRetryCount)" RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
+        <Exec Command="$(NuGetExe) pack -NoPackageAnalysis $(DropDirectory)Adapter.Source.nuspec -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
+        <Delete Files="$(DropDirectory)Adapter.Source.nuspec" ContinueOnError="false" />
+
+        <!-- Add Source to package ids and title -->
+        <ItemGroup>
+            <_SourceRegexTransform Include="%(PackageSpec.FullPath)">
+                <Find><![CDATA[<id>(.+?)</id>]]></Find>
+                <ReplaceWith><![CDATA[<id>$1.Source</id>]]></ReplaceWith>
+            </_SourceRegexTransform>
+            <_SourceRegexTransform Include="%(PackageSpec.FullPath)">
+                <Find><![CDATA[<title>(.+?)</title>]]></Find>
+                <ReplaceWith><![CDATA[<title>$1 (Source Code)</title>]]></ReplaceWith>
+            </_SourceRegexTransform>
+        </ItemGroup>
+
+        <RegexTransform Items="@(_SourceRegexTransform)" />
+
+        <!-- Cleanup the binaries and sources before building the actual packages -->
+        <RemoveDir Directories="%(PackageSpec.RootDir)%(PackageSpec.Directory)lib" ContinueOnError="false" />
+        <Delete Files="%(PackageSpec.RootDir)%(PackageSpec.Directory)src\**\*.*" ContinueOnError="true" />
+        <RemoveDir Directories="%(PackageSpec.RootDir)%(PackageSpec.Directory)src" ContinueOnError="true" />
+
+        <Exec Command="$(NuGetExe) pack -NoPackageAnalysis %(PackageSpec.FullPath) -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
+    </Target>
+    
     <Target Name="ReplaceCurrentVersions">
         <ReadAssemblyVersion File="$(BuildRoot)Src\GlobalAssemblyInfo.cs">
             <Output PropertyName="VersionMajor"
@@ -54,12 +167,6 @@
             <Output PropertyName="VersionRevision"
                     TaskParameter="Revision"/>
         </ReadAssemblyVersion>
-
-        <DownloadString Url="https://raw.github.com/wiki/clariuslabs/adapter/ReleaseNotes.md"
-                        ContinueOnError="true">
-            <Output PropertyName="ReleaseNotes"
-                    TaskParameter="Content" />
-        </DownloadString>
 
         <PropertyGroup>
             <Major>$(VersionMajor)</Major>
@@ -75,27 +182,28 @@
         </PropertyGroup>
 
         <ItemGroup>
-            <RegexTransform Include="$(BuildRoot)Src\GlobalAssemblyInfo.cs">
+            <_VersionRegexTransform Include="$(BuildRoot)Src\GlobalAssemblyInfo.cs">
                 <Find>AssemblyFileVersion\(".*?"\)</Find>
                 <ReplaceWith>AssemblyFileVersion("$(FileVersion)")</ReplaceWith>
-            </RegexTransform>
-            <RegexTransform Include="$(BuildRoot)**\*.nuspec">
+            </_VersionRegexTransform>
+            <_VersionRegexTransform Include="$(BuildRoot)**\*.nuspec">
                 <Find><![CDATA[<version>.*?</version>]]></Find>
                 <ReplaceWith><![CDATA[<version>$(PackageVersion)</version>]]></ReplaceWith>
-            </RegexTransform>
-            <RegexTransform Include="$(BuildRoot)**\*.nuspec"
+            </_VersionRegexTransform>
+            <_VersionRegexTransform Include="$(BuildRoot)**\*.nuspec"
                             Condition="'$(ReleaseNotes)' != ''">
-                <Find><![CDATA[<releaseNotes />]]></Find>
+                <Find><![CDATA[<releaseNotes />|<releaseNotes/>|<releaseNotes>.*</releaseNotes>]]></Find>
                 <ReplaceWith><![CDATA[<releaseNotes>$(ReleaseNotes)</releaseNotes>]]></ReplaceWith>
-            </RegexTransform>
+                <Options>Singleline</Options>
+            </_VersionRegexTransform>
             <!-- Replace dependency versions in the aggregated package -->
-            <RegexTransform Include="$(BuildRoot)Src\Adapter.nuspec">
-                <Find><![CDATA[version=".*?"]]></Find>
-                <ReplaceWith><![CDATA[version="$(PackageVersion)"]]></ReplaceWith>
-            </RegexTransform>
+            <_VersionRegexTransform Include="$(BuildRoot)Src\Adapter.nuspec">
+                <Find>version=".*?"</Find>
+                <ReplaceWith>version="$(PackageVersion)"</ReplaceWith>
+            </_VersionRegexTransform>
         </ItemGroup>
 
-        <RegexTransform Items="@(RegexTransform)" />
+        <RegexTransform Items="@(_VersionRegexTransform)" />
     </Target>
 
     <Target Name="BuildTargetFramework">
@@ -108,4 +216,65 @@
     			 Targets="Build" />
     </Target>
 
+    <!-- 
+        This task batches on the supported framework names, so that 
+        a full set of source files are copied to each of the supported
+        framework target folders. This avoids users installing the 
+        sources on a project where they won't compile.
+    -->
+    <Target Name="CopySourceAsContent" 
+            Inputs="%(SupportedFramework.Identity)" 
+            Outputs="$(BuildRoot)Src\*\bin\content\%(Identity)\**\*.*">
+        <PropertyGroup>
+            <!-- Grab the currently batching framework name as a property.
+                 It's the only way I could make it to work to add it as 
+                 a metadata property on the content files we need to copy. -->
+            <TargetFolder>%(SupportedFramework.Identity)</TargetFolder>
+        </PropertyGroup>
+        <ItemGroup Condition="'$(TargetFolder)' != ''">
+            <!-- Content files are made from the package directory src which was 
+                 prepared by each project's target after build. 
+                 We exclude netfx sources which never go as source but as dependencies,
+                 and the *AssemblyInfo.cs
+            -->
+            <ContentFiles Include="%(PackageSpec.RootDir)%(PackageSpec.Directory)src\**\*.*"
+                          Exclude="%(PackageSpec.RootDir)%(PackageSpec.Directory)src\netfx\**\*.*;
+                                   %(PackageSpec.RootDir)%(PackageSpec.Directory)src\Properties\*.*">
+                <PackageDir>%(PackageSpec.RootDir)%(PackageSpec.Directory)</PackageDir>
+                <TargetFolder>$(TargetFolder)</TargetFolder>
+            </ContentFiles>
+        </ItemGroup>
+
+        <ItemGroup>
+            <_ContentRegexTransform Include="@(ContentFiles)">
+                <Find>namespace Patterns.Adapter</Find>
+                <ReplaceWith>namespace $rootnamespace$.Patterns.Adapter</ReplaceWith>
+            </_ContentRegexTransform>
+        </ItemGroup>
+
+        <RegexTransform Items="@(_ContentRegexTransform)" />
+
+        <Copy SourceFiles="@(ContentFiles)" Condition="'$(TargetFolder)' != ''"
+              DestinationFiles="@(ContentFiles->'%(PackageDir)content\%(TargetFolder)\Patterns\Adapter\%(RecursiveDir)%(Filename)%(Extension)')"
+              ContinueOnError="false"
+              SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="true"
+              Retries="$(CopyRetryCount)"
+              RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
+    </Target>
+
+    <!-- 
+        This task injects the packages listed in the packages.config 
+        of the owning project as dependencies of the resulting source 
+        package, since those will be required in order to compile. 
+    -->
+    <Target Name="AddPackageDependencies">
+        <ItemGroup>
+            <PackagesConfig Include="%(PackageSpec.RootDir)%(PackageSpec.Directory)..\packages.config">
+                <NuSpec>%(PackageSpec.FullPath)</NuSpec>
+            </PackagesConfig>
+        </ItemGroup>
+
+        <AddDependencies Items="@(PackagesConfig)" Condition="Exists(%(PackagesConfig.FullPath))" />
+    </Target>
 </Project>
