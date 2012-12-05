@@ -59,7 +59,7 @@
         <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
         <BuildRoot>$(MSBuildThisFileDirectory)..\</BuildRoot>
         <NuGetExe>$(BuildRoot).nuget\NuGet.exe</NuGetExe>
-        <DropDirectory>$(MSBuildThisFileDirectory)Drop\</DropDirectory>
+        <DropDirectory>$(BuildRoot)Drop\</DropDirectory>
         <PackagesInclude>$(BuildRoot)Src\*\bin\*.nuspec</PackagesInclude>
         <!--<PackagesInclude>$(BuildRoot)Src\Adapter.Interfaces\bin\Package.nuspec</PackagesInclude>-->
         <ReleaseNotes>$([System.IO.File]::ReadAllText('$(BuildRoot)ReleaseNotes.md'))</ReleaseNotes>
@@ -77,7 +77,6 @@
         <BuildDependsOn>
             $(BuildDependsOn);
             PrepareDropLocation;
-            RestorePackages;
             ReplaceCurrentVersions;
             BuildTargetFramework;
             PreparePackages;
@@ -212,7 +211,7 @@
         </ParseFrameworkName>
 
         <MSBuild Projects="$(BuildRoot)Adapter.sln"
-    			 Properties="NuGet=true;RestorePackages=false;FrameworkName=%(TargetFramework.Name);TargetFrameworkIdentifier=%(TargetFramework.Identifier);TargetFrameworkVersion=%(TargetFramework.Version);TargetFrameworkProfile=%(TargetFramework.Profile)"
+    			 Properties="NuGet=true;FrameworkName=%(TargetFramework.Name);TargetFrameworkIdentifier=%(TargetFramework.Identifier);TargetFrameworkVersion=%(TargetFramework.Version);TargetFrameworkProfile=%(TargetFramework.Profile)"
     			 Targets="Build" />
     </Target>
 
