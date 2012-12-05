@@ -23,7 +23,7 @@ using System.Reflection;
 [assembly: AssemblyCopyright("Copyright © Clarius Consulting 2012")]
 
 [assembly: AssemblyVersion("1.0")]
-[assembly: AssemblyFileVersion("1.0.1212.0511")]
+[assembly: AssemblyFileVersion("1.0.1212.0519")]
 
 /// <summary>
 /// Shared constants across implementation and interface.

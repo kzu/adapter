@@ -3,7 +3,7 @@
     <metadata>
         <id>Adapter.Sdk</id>
         <title>Adapter SDK</title>
-        <version>1.0.1212.0511</version>
+        <version>1.0.1212.0519</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>
         <summary>Provides the IAdapter interface that adapter implementations provide for the service.</summary>

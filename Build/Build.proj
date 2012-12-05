@@ -70,9 +70,6 @@
         <SupportedFramework Include="net45" />
     </ItemGroup>
 
-    <!--
-    -->
-
     <PropertyGroup>
         <BuildDependsOn>
             $(BuildDependsOn);
@@ -245,7 +242,7 @@
         </ItemGroup>
 
         <ItemGroup>
-            <_ContentRegexTransform Include="@(ContentFiles)">
+            <_ContentRegexTransform Include="@(ContentFiles)" Condition="'%(Extension)' == '.cs'">
                 <Find>namespace Patterns.Adapter</Find>
                 <ReplaceWith>namespace $rootnamespace$.Patterns.Adapter</ReplaceWith>
             </_ContentRegexTransform>
@@ -253,7 +250,17 @@
 
         <RegexTransform Items="@(_ContentRegexTransform)" />
 
-        <Copy SourceFiles="@(ContentFiles)" Condition="'$(TargetFolder)' != ''"
+        <!-- Source files should be pre-processed -->
+        <Copy SourceFiles="@(ContentFiles)" Condition="'$(TargetFolder)' != '' And '%(Extension)' == '.cs'"
+              DestinationFiles="@(ContentFiles->'%(PackageDir)content\%(TargetFolder)\Patterns\Adapter\%(RecursiveDir)%(Filename)%(Extension).pp')"
+              ContinueOnError="false"
+              SkipUnchangedFiles="true"
+              OverwriteReadOnlyFiles="true"
+              Retries="$(CopyRetryCount)"
+              RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
+
+        <!-- Source files should be pre-processed -->
+        <Copy SourceFiles="@(ContentFiles)" Condition="'$(TargetFolder)' != '' And '%(Extension)' != '.cs'"
               DestinationFiles="@(ContentFiles->'%(PackageDir)content\%(TargetFolder)\Patterns\Adapter\%(RecursiveDir)%(Filename)%(Extension)')"
               ContinueOnError="false"
               SkipUnchangedFiles="true"

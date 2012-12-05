@@ -3,7 +3,7 @@
     <metadata>
         <id>Adapter.Implementation</id>
         <title>Adapter Implementation</title>
-        <version>1.0.1212.0511</version>
+        <version>1.0.1212.0519</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>
         <summary>Provides the implementation of an adapter pattern service in a lightweight reusable binary component.</summary>

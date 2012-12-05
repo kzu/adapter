@@ -28,7 +28,9 @@
     <None Include="..\..\Common\ClariusLabs.licenseheader">
       <Link>ClariusLabs.licenseheader</Link>
     </None>
-    <None Include="Properties\Package.nuspec" />
+    <None Include="Properties\Package.nuspec">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildThisFileDirectory)..\..\Common\ClariusLabs.targets" />
