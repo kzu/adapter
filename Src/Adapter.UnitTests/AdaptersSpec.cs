@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-#region BSD License
+﻿#region BSD License
 /* 
 Copyright (c) 2012, Clarius Consulting
 All rights reserved.
@@ -13,15 +12,68 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 #endregion
 
-namespace Adapter
+namespace Patterns.Adapter
 {
     using System;
     using Moq;
     using Xunit;
     using System.Linq;
+    using Microsoft.Build.Utilities;
+using System.Collections.Generic;
+    using System.Xml.Linq;
 
     public class AdaptersSpec
     {
+        private TaskItem[] Items;
+
+        [Fact]
+        public void when_action_then_assert()
+        {
+            Items = new[] { new TaskItem(@"D:\Code\clarius\github\adapter\Src\Adapter.Interfaces\bin\..\packages.config", 
+                new Dictionary<string, string>
+                {
+                    { "FullPath", @"D:\Code\clarius\github\adapter\Src\Adapter.Interfaces\packages.config" },
+                    { "NuSpec", @"D:\Code\clarius\github\adapter\Src\Adapter.Interfaces\bin\Package.nuspec" },
+                }) };
+
+        //<packages>
+        //  <package id="netfx-Guard" version="1.3.2.0" targetFramework="net40" />
+        //  <package id="netfx-System.AmbientSingleton" version="1.1.0.0" targetFramework="net40" />
+        //</packages>
+
+        //<dependencies>
+        //    <group targetFramework="net40">
+        //        <dependency id="" version=""/>
+        //    </group>
+        //</dependencies>
+
+            foreach (var item in this.Items)
+            {
+                var config = XDocument.Load(item.GetMetadata("FullPath"));
+                var packages = config.Root.Elements()
+                    .Select(x => new
+                    {
+                        Id = x.Attribute("id").Value,
+                        Version = x.Attribute("version").Value,
+                        TargetFramework = x.Attribute("targetFramework").Value
+                    })
+                    .GroupBy(x => x.TargetFramework)
+                    .Select(x => string.Format(
+"\r\n            <group targetFramework=\"{0}\">", x.Key) + 
+                        string.Join("", x.Select(d => string.Format(
+                            "\r\n                <dependency id=\"{0}\" version=\"{1}\"/>", d.Id, d.Version))) +
+"\r\n            <\\group>");
+
+                var dependencies = 
+                    "        <dependencies>" + 
+                                string.Join("", packages) +
+                    "\r\n        </dependencies>";
+
+                Console.WriteLine("Dependencies");
+                Console.WriteLine(dependencies);
+            }
+        }
+
         [Fact]
         public void WhenGlobalServiceSpecified_ThenExtensionMethodUsesIt()
         {
