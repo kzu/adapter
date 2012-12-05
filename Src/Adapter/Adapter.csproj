@@ -24,6 +24,7 @@
     </Compile>
     <Compile Include="AdaptersInitializer.cs" />
     <Compile Include="AdapterService.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="netfx\System\AmbientSingleton.cs" />
     <Compile Include="netfx\System\Collections\Generic\IEnumerable\TraverseKind.cs" />
     <Compile Include="netfx\System\Collections\Generic\IEnumerable\Traverser.cs" />
