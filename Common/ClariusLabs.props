@@ -3,6 +3,7 @@
     <Import Project="$(MSBuildThisFileDirectory)ClariusLabs.tasks" />
     <PropertyGroup>
         <SolutionDir Condition="'$(SolutionDir)' == '' Or '$(SolutionDir)' == '*Undefined*'">$(MSBuildThisFileDirectory)..\</SolutionDir>
+        <SolutionDir Condition="!HasTrailingSlash('$(SolutionDir)')">$(SolutionDir)\</SolutionDir>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)ClariusLabs.snk</AssemblyOriginatorKeyFile>
         <RestorePackages Condition="'$(RestorePackages)' == ''">true</RestorePackages>
