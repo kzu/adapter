@@ -2,7 +2,7 @@
     <metadata>
         <id>Adapter</id>
         <title>Adapter</title>
-        <version>1.0.1212.0501</version>
+        <version>1.0.1212.0511</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>
         <summary>Convenience package that includes interfaces, SDK and implementation of a lightweight adapter pattern service for pluggable adaptation of objects.</summary>
@@ -43,9 +43,9 @@ v1.0
         <tags>patterns adapter</tags>
         <iconUrl>https://github.com/clariuslabs/adapter/raw/master/ClariusLabs.png</iconUrl>
         <dependencies>
-            <dependency id="Adapter.Interfaces" version="1.0.1212.0501" />
-            <dependency id="Adapter.Sdk" version="1.0.1212.0501" />
-            <dependency id="Adapter.Implementation" version="1.0.1212.0501" />
+            <dependency id="Adapter.Interfaces" version="1.0.1212.0511" />
+            <dependency id="Adapter.Sdk" version="1.0.1212.0511" />
+            <dependency id="Adapter.Implementation" version="1.0.1212.0511" />
         </dependencies>
     </metadata>
 </package>

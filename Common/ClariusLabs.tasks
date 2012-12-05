@@ -71,9 +71,8 @@
              string replaceWith = item.GetMetadata("ReplaceWith");
              string optionsValue = item.GetMetadata("Options") ?? "";
              
-             var options = optionsValue.Split(new [] { '|' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => (RegexOptions)Enum.Parse(typeof(RegexOptions), s.Trim()))
-                .Aggregate(RegexOptions.None, (current, option) => current | option);
+             var options = string.IsNullOrWhiteSpace(optionsValue) ? 
+                RegexOptions.None : (RegexOptions)Enum.Parse(typeof(RegexOptions), optionsValue.Replace('|', ','));
 
              if(!File.Exists(fileName))
              {

@@ -3,7 +3,7 @@
     <metadata>
         <id>Adapter.Composition</id>
         <title>Adapter Composition</title>
-        <version>1.0.1212.0501</version>
+        <version>1.0.1212.0511</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>
         <summary>Provides a MEF-friendly implementation that can be automatically initialized with exported adapters in the container.</summary>

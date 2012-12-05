@@ -2,8 +2,8 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>Adapter.Interfaces</id>
-        <title>Adapter Composition</title>
-        <version>1.0.1212.0501</version>
+        <title>Adapter Interfaces</title>
+        <version>1.0.1212.0511</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>
         <summary>Provides the core interface and extension method As{T} that consumers use, while still being decoupled from the adapters and corresponding service implementation.</summary>
