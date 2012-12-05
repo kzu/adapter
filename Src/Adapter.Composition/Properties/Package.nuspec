@@ -55,7 +55,7 @@ v1.0
         <licenseUrl>http://opensource.org/licenses/BSD-2-Clause</licenseUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <tags>patterns adapter</tags>
-        <iconUrl>https://github.com/clariuslabs/adapter/raw/master/ClariusLabs.png</iconUrl>
+        <iconUrl>https://github.com/clariuslabs/adapter/raw/master/Common/ClariusLabsIcon.png</iconUrl>
         <dependencies/>
     </metadata>
 </package>
