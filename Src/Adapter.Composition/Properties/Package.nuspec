@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>Adapter.Composition</id>
-        <title>Adapter Composition</title>
+        <title>Adapter Pattern - Composition</title>
         <version>1.0.1212.0519</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>

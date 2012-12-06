@@ -2,11 +2,11 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>Adapter.Interfaces</id>
-        <title>Adapter Interfaces</title>
+        <title>Adapter Pattern - Interfaces</title>
         <version>1.0.1212.0519</version>
         <authors>Daniel Cazzulino</authors>
         <owners>danielkzu, clariuslabs</owners>
-        <summary>Provides the core interface and extension method As{T} that consumers use, while still being decoupled from the adapters and corresponding service implementation.</summary>
+        <summary>Provides the core interface and extension method "As{T}" that consumers use, while still being decoupled from the adapters and corresponding service implementation.</summary>
         <description>
             <![CDATA[
             Only two APIs are provided: the IAdapterService and its facade extension method As in the Adapters type.
