@@ -117,17 +117,17 @@
         <!-- First build the aggregate package -->
         <Copy SourceFiles="$(BuildRoot)Src\Adapter.nuspec" DestinationFolder="$(DropDirectory)" ContinueOnError="false" SkipUnchangedFiles="true"
               OverwriteReadOnlyFiles="true" Retries="$(CopyRetryCount)" RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
-        <Exec Command="$(NuGetExe) pack -NoPackageAnalysis $(DropDirectory)Adapter.nuspec -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
+        <Exec Command="$(NuGetExe) pack -Version $(PackageVersion) -NoPackageAnalysis $(DropDirectory)Adapter.nuspec -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
         <Delete Files="$(DropDirectory)Adapter.nuspec" ContinueOnError="false" />
 
-        <Exec Command="$(NuGetExe) pack -NoPackageAnalysis %(PackageSpec.FullPath) -Symbols -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
+        <Exec Command="$(NuGetExe) pack -Version $(PackageVersion) -NoPackageAnalysis %(PackageSpec.FullPath) -Symbols -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
     </Target>
 
     <Target Name="BuildSourcePackages" DependsOnTargets="CopySourceAsContent;AddPackageDependencies">
         <!-- First build the aggregate source package -->
         <Copy SourceFiles="$(BuildRoot)Src\Adapter.Source.nuspec" DestinationFolder="$(DropDirectory)" ContinueOnError="false" SkipUnchangedFiles="true"
               OverwriteReadOnlyFiles="true" Retries="$(CopyRetryCount)" RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
-        <Exec Command="$(NuGetExe) pack -NoPackageAnalysis $(DropDirectory)Adapter.Source.nuspec -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
+        <Exec Command="$(NuGetExe) pack -Version $(PackageVersion) -NoPackageAnalysis $(DropDirectory)Adapter.Source.nuspec -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
         <Delete Files="$(DropDirectory)Adapter.Source.nuspec" ContinueOnError="false" />
 
         <!-- Add Source to package ids and title -->
@@ -149,7 +149,7 @@
         <Delete Files="%(PackageSpec.RootDir)%(PackageSpec.Directory)src\**\*.*" ContinueOnError="true" />
         <RemoveDir Directories="%(PackageSpec.RootDir)%(PackageSpec.Directory)src" ContinueOnError="true" />
 
-        <Exec Command="$(NuGetExe) pack -NoPackageAnalysis %(PackageSpec.FullPath) -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
+        <Exec Command="$(NuGetExe) pack -Version $(PackageVersion) -NoPackageAnalysis %(PackageSpec.FullPath) -OutputDirectory $(DropDirectory)" ContinueOnError="false" />
     </Target>
     
     <Target Name="ReplaceCurrentVersions">
@@ -182,10 +182,10 @@
                 <Find>AssemblyFileVersion\(".*?"\)</Find>
                 <ReplaceWith>AssemblyFileVersion("$(FileVersion)")</ReplaceWith>
             </_VersionRegexTransform>
-            <_VersionRegexTransform Include="$(BuildRoot)**\*.nuspec">
+            <!--<_VersionRegexTransform Include="$(BuildRoot)**\*.nuspec">
                 <Find><![CDATA[<version>.*?</version>]]></Find>
                 <ReplaceWith><![CDATA[<version>$(PackageVersion)</version>]]></ReplaceWith>
-            </_VersionRegexTransform>
+            </_VersionRegexTransform>-->
             <_VersionRegexTransform Include="$(BuildRoot)**\*.nuspec"
                             Condition="'$(ReleaseNotes)' != ''">
                 <Find><![CDATA[<releaseNotes />|<releaseNotes/>|<releaseNotes>.*</releaseNotes>]]></Find>
@@ -193,10 +193,10 @@
                 <Options>Singleline</Options>
             </_VersionRegexTransform>
             <!-- Replace dependency versions in the aggregated package -->
-            <_VersionRegexTransform Include="$(BuildRoot)Src\Adapter.nuspec">
+            <!--<_VersionRegexTransform Include="$(BuildRoot)Src\Adapter.nuspec">
                 <Find>version=".*?"</Find>
                 <ReplaceWith>version="$(PackageVersion)"</ReplaceWith>
-            </_VersionRegexTransform>
+            </_VersionRegexTransform>-->
         </ItemGroup>
 
         <RegexTransform Items="@(_VersionRegexTransform)" />
