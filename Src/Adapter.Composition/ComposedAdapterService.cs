@@ -18,7 +18,7 @@ namespace Patterns.Adapter
     using System.ComponentModel.Composition;
 
     [Export(typeof(IAdapterService))]
-    public class ComposedAdapterService : AdapterService
+    public partial class ComposedAdapterService : AdapterService
     {
 		[ImportingConstructor]
 		public ComposedAdapterService([ImportMany] IEnumerable<IAdapter> adapters)

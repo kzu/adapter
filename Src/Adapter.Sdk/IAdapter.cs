@@ -17,7 +17,7 @@ namespace Patterns.Adapter
 	/// <summary>
 	/// Marker interface for all adapters.
 	/// </summary>
-	public interface IAdapter
+    public partial interface IAdapter
 	{
 	}
 
@@ -27,7 +27,7 @@ namespace Patterns.Adapter
 	/// </summary>
 	/// <typeparam name="TFrom">The type that this adapter supports adapting from.</typeparam>
 	/// <typeparam name="TTo">The type that this adapter adapts to.</typeparam>
-	public interface IAdapter<in TFrom, out TTo> : IAdapter
+    public partial interface IAdapter<in TFrom, out TTo> : IAdapter
 	{
 		/// <summary>
 		/// Adapts the specified object from the <typeparamref name="TFrom"/> type to the 
