@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xunit>
+  <assemblies>
+    <assembly filename="Adapter.UnitTests\bin\lib\net40\Adapter.UnitTests.dll" shadow-copy="true" />
+    <assembly filename="Adapter.UnitTests\bin\lib\net40\Adapter.UnitTests.dll" shadow-copy="true" />
+  </assemblies>
+</xunit>

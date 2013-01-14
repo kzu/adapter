@@ -20,9 +20,9 @@ namespace Patterns.Adapter
     public partial interface IAdapterService
 	{
 		/// <summary>
-		/// Tries to adapt the given <paramref name="source"/> to the requested <typeparamref name="T"/>.
+		/// Returns an adaptable object for the given <paramref name="source"/>.
 		/// </summary>
-		/// <returns>The adapted object if an adapter for the source could be found; <see langword="null"/> otherwise.</returns>
-		T As<T>(object source) where T : class;
+		/// <returns>The adaptable object for the given source type.</returns>
+		IAdaptable<TSource> Adapt<TSource>(TSource source) where TSource : class;
 	}
 }

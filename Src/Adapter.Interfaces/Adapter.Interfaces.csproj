@@ -24,7 +24,9 @@
     </Compile>
     <Compile Include="Adapters.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="IAdaptable.cs" />
     <Compile Include="IAdapterService.cs" />
+    <Compile Include="IFluentInterface.cs" />
     <Compile Include="netfx\System\AmbientSingleton.cs" />
     <Compile Include="netfx\System\Guard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

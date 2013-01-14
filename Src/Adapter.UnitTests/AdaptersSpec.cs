@@ -18,7 +18,6 @@ namespace Patterns.Adapter
     using Moq;
     using Xunit;
     using System.Linq;
-    using Microsoft.Build.Utilities;
     using System.Collections.Generic;
     using System.Xml.Linq;
     using System.IO;
@@ -26,81 +25,38 @@ namespace Patterns.Adapter
 
     public class AdaptersSpec
     {
-        private TaskItem[] Items;
-
-        [Fact]
-        public void when_action_then_assert()
-        {
-            Items = new[] { new TaskItem(@"D:\Code\clarius\github\adapter\Src\Adapter.Interfaces\bin\..\packages.config", 
-                new Dictionary<string, string>
-                {
-                    { "FullPath", @"D:\Code\clarius\github\adapter\Src\Adapter.Interfaces\packages.config" },
-                    { "NuSpec", @"D:\Code\clarius\github\adapter\Src\Adapter.Interfaces\bin\Package.nuspec" },
-                }) };
-
-        //<packages>
-        //  <package id="netfx-Guard" version="1.3.2.0" targetFramework="net40" />
-        //  <package id="netfx-System.AmbientSingleton" version="1.1.0.0" targetFramework="net40" />
-        //</packages>
-
-        //<dependencies>
-        //    <dependency id="" version=""/>
-        //</dependencies>
-            
-            foreach (var item in this.Items)
-            {
-                var config = XDocument.Load(item.GetMetadata("FullPath"));
-                var packages = config.Root.Elements()
-                    .Select(x => new
-                    {
-                        Id = x.Attribute("id").Value,
-                        Version = x.Attribute("version").Value,
-                        TargetFramework = x.Attribute("targetFramework").Value
-                    })
-                    .Select(x => string.Format(
-                        "\r\n                <dependency id=\"{0}\" version=\"{1}\"/>", x.Id, x.Version));
-
-                var dependencies = 
-                    "<dependencies>" + 
-                                string.Join("", packages) +
-                    "\r\n        </dependencies>";
-
-                File.WriteAllText(
-                  item.GetMetadata("NuSpec"),
-                  Regex.Replace(
-                    File.ReadAllText(item.GetMetadata("NuSpec")),
-                    "<dependencies />|<dependencies/>|<dependencies>.*</dependencies>",
-                    dependencies,
-                    RegexOptions.Singleline
-                  )
-                );
-
-                Console.WriteLine("Spec");
-                Console.WriteLine(File.ReadAllText(item.GetMetadata("NuSpec")));
-            }
-        }
-
         [Fact]
         public void WhenGlobalServiceSpecified_ThenExtensionMethodUsesIt()
         {
-            var service = Mock.Of<IAdapterService>();
+            var service = Mock.Of<IAdapterService>(x => x.Adapt(It.IsAny<IFoo>()) == Mock.Of<IAdaptable<IFoo>>());
             AdaptersInitializer.SetService(service);
 
-            Mock.Of<IFoo>().As<IBar>();
+            var adaptable = Mock.Of<IFoo>().Adapt();
 
-            Mock.Get(service).Verify(x => x.As<IBar>(It.IsAny<IFoo>()));
+            Assert.NotNull(adaptable);
+
+            adaptable.As<IBar>();
+
+            Mock.Get(service).Verify(x => x.Adapt(It.IsAny<IFoo>()));
+            Mock.Get(adaptable).Verify(x => x.As<IBar>());
         }
 
         [Fact]
         public void WhenTransientServiceSpecified_ThenOverridesGlobalService()
         {
-            var transient = Mock.Of<IAdapterService>();
+            var transient = Mock.Of<IAdapterService>(x => x.Adapt(It.IsAny<IFoo>()) == Mock.Of<IAdaptable<IFoo>>());
 
             using (AdaptersInitializer.SetTransientService(transient))
             {
-                Mock.Of<IFoo>().As<IBar>();
 
-                Mock.Get(transient).Verify(x => x.As<IBar>(It.IsAny<IFoo>()));
+                var adaptable = Mock.Of<IFoo>().Adapt();
+
+                Assert.NotNull(adaptable);
+
+                adaptable.As<IBar>();
+
+                Mock.Get(transient).Verify(x => x.Adapt(It.IsAny<IFoo>()));
+                Mock.Get(adaptable).Verify(x => x.As<IBar>());
             }
         }
 

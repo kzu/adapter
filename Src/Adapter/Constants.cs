@@ -24,8 +24,8 @@ namespace Patterns.Adapter
 
         static Constants()
         {
-            globalIdentifier = typeof(Constants).Assembly.GetName().Version + "{29938042-C16D-46BA-93D3-F513E88EC345}";
-            transientIdentifier = typeof(Constants).Assembly.GetName().Version + "{E0A43955-6A73-4FD7-B30E-3FB699A804EC}";
+            globalIdentifier = typeof(IAdapterService).Assembly.GetName().Version + "{29938042-C16D-46BA-93D3-F513E88EC345}";
+            transientIdentifier = typeof(IAdapterService).Assembly.GetName().Version + "{E0A43955-6A73-4FD7-B30E-3FB699A804EC}";
         }
 
         /// <summary>

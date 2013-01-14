@@ -25,7 +25,7 @@ namespace Patterns.Adapter
         {
             var service = new AdapterService(new BadAdapter());
 
-            Assert.Null(service.As<IFormattable>(new object()));
+            Assert.Null(service.Adapt(new object()).As<IFormattable>());
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace Patterns.Adapter
             var service = new AdapterService(new StringAdapter());
             var from = Mock.Of<IFrom>();
 
-            var adapted = service.As<string>(from);
+            var adapted = service.Adapt(from).As<string>();
 
             Assert.NotNull(adapted);
             Assert.Equal("foo", adapted);
@@ -50,8 +50,8 @@ namespace Patterns.Adapter
             var service = new AdapterService(mock.Object);
             var from = Mock.Of<IFrom>();
 
-            service.As<string>(from);
-            service.As<ITo>(from);
+            service.Adapt(from).As<string>();
+            service.Adapt(from).As<ITo>();
 
             mock.Verify(x => x.Adapt(from));
             mock.As<IAdapter<IFrom, ITo>>().Verify(x => x.Adapt(from));
@@ -63,7 +63,7 @@ namespace Patterns.Adapter
             var service = new AdapterService();
             var from = Mock.Of<IFrom>();
 
-            var adapted = service.As<string>(from);
+            var adapted = service.Adapt(from).As<string>();
 
             Assert.Null(adapted);
         }
@@ -74,7 +74,7 @@ namespace Patterns.Adapter
             var service = new AdapterService(new StringAdapter());
             var foo = Mock.Of<IFrom3>();
 
-            var adapted = service.As<string>(foo);
+            var adapted = service.Adapt(foo).As<string>();
 
             Assert.Equal("foo", adapted);
         }
@@ -86,7 +86,7 @@ namespace Patterns.Adapter
                 Mock.Of<IAdapter<IFrom, ITo2>>(x => 
                     x.Adapt(It.IsAny<IFrom>()) == Mock.Of<ITo2>()));
 
-            var adapted = service.As<ITo>(Mock.Of<IFrom>());
+            var adapted = service.Adapt(Mock.Of<IFrom>()).As<ITo>();
 
             Assert.NotNull(adapted);
         }
@@ -100,7 +100,7 @@ namespace Patterns.Adapter
                 Mock.Of<IAdapter<IFrom, ITo3>>(x =>
                     x.Adapt(It.IsAny<IFrom>()) == Mock.Of<ITo3>()));
 
-            var adapted = service.As<ITo>(Mock.Of<IFrom>());
+            var adapted = service.Adapt(Mock.Of<IFrom>()).As<ITo>();
 
             Assert.NotNull(adapted);
             Assert.IsAssignableFrom<ITo3>(adapted);
@@ -117,14 +117,14 @@ namespace Patterns.Adapter
                     x.Adapt(It.IsAny<IFrom3>()) == Mock.Of<ITo3>(_ => _.Name == "IFrom3, ITo3")),
             });
 
-            Assert.Equal("IFrom, ITo", service.As<ITo>(Mock.Of<IFrom>()).Name);
-            Assert.Equal("IFrom, ITo", service.As<ITo>(Mock.Of<IFrom2>()).Name);
-            Assert.Equal("IFrom3, ITo3", service.As<ITo>(Mock.Of<IFrom3>()).Name);
+            Assert.Equal("IFrom, ITo", service.Adapt(Mock.Of<IFrom>()).As<ITo>().Name);
+            Assert.Equal("IFrom, ITo", service.Adapt(Mock.Of<IFrom2>()).As<ITo>().Name);
+            Assert.Equal("IFrom3, ITo3", service.Adapt(Mock.Of<IFrom3>()).As<ITo>().Name);
             // No registered adapter to ITo2 from IFrom or IFrom2
-            Assert.Null(service.As<ITo2>(Mock.Of<IFrom>()));
-            Assert.Null(service.As<ITo2>(Mock.Of<IFrom2>()));
+            Assert.Null(service.Adapt(Mock.Of<IFrom>()).As<ITo2>());
+            Assert.Null(service.Adapt(Mock.Of<IFrom2>()).As<ITo2>());
             // But ITo3 is assignable to ITo2, so from IFrom3 we can adapt
-            Assert.Equal("IFrom3, ITo3", service.As<ITo2>(Mock.Of<IFrom3>()).Name);
+            Assert.Equal("IFrom3, ITo3", service.Adapt(Mock.Of<IFrom3>()).As<ITo2>().Name);
         }
 
         public class GivenThreeAdaptersInHierarchy
@@ -146,7 +146,7 @@ namespace Patterns.Adapter
             {
                 var foo = Mock.Of<IFrom3>();
 
-                var adapted = this.service.As<string>(foo);
+                var adapted = this.service.Adapt(foo).As<string>();
 
                 Assert.Equal("from3", adapted);
             }
@@ -156,7 +156,7 @@ namespace Patterns.Adapter
             {
                 var foo = Mock.Of<IFrom2>();
 
-                var adapted = this.service.As<string>(foo);
+                var adapted = this.service.Adapt(foo).As<string>();
 
                 Assert.Equal("from2", adapted);
             }
@@ -166,7 +166,7 @@ namespace Patterns.Adapter
             {
                 var foo = Mock.Of<ICloneable>();
 
-                var adapted = this.service.As<string>(foo);
+                var adapted = this.service.Adapt(foo).As<string>();
 
                 Assert.Equal(default(string), adapted);
             }
@@ -176,8 +176,8 @@ namespace Patterns.Adapter
             {
                 var foo = new SupportsIFromITo();
 
-                var from = this.service.As<IFrom>(foo);
-                var to = this.service.As<ITo>(foo);
+                var from = this.service.Adapt(foo).As<IFrom>();
+                var to = this.service.Adapt(foo).As<ITo>();
 
                 Assert.Same(foo, from);
                 Assert.Same(foo, to);
@@ -204,7 +204,7 @@ namespace Patterns.Adapter
             {
                 var from = new From();
 
-                var adapted = this.service.As<string>(from);
+                var adapted = this.service.Adapt(from).As<string>();
 
                 Assert.Equal("foo", adapted);
             }

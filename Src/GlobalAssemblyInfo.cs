@@ -22,5 +22,5 @@ using System.Reflection;
 [assembly: AssemblyCompany("Clarius Consulting")]
 [assembly: AssemblyCopyright("Copyright © Clarius Consulting 2012")]
 
-[assembly: AssemblyVersion("1.0")]
-[assembly: AssemblyFileVersion("1.0.1212.0519")]
+[assembly: AssemblyVersion("1.1")]
+[assembly: AssemblyFileVersion("1.1.1212.0519")]

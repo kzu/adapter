@@ -14,39 +14,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace Patterns.Adapter
 {
-    using System;
-
     /// <summary>
-    /// Provides the entry point for setting the implementation of the 
-    /// <see cref="IAdapterService"/> as well as the <see cref="As"/> 
-    /// extension method for consumers.
+    /// Exposes the <see cref="As{T}"/> method that allows any 
+    /// object to be adapted to any other type (provided there 
+    /// is a compatible adapter registered in the system).
     /// </summary>
-    public static partial class Adapters
+    public interface IAdaptable<TSource> : IFluentInterface
+        where TSource : class
     {
-        // AppDomain-wise global static service instance that is set with the same GUID from the AdapterService implementation.
-        private static Lazy<IAdapterService> service = new Lazy<IAdapterService>(() => (IAdapterService)AppDomain.CurrentDomain.GetData(Constants.GlobalStateIdentifier));
-        private static readonly AmbientSingleton<IAdapterService> transientService = new AmbientSingleton<IAdapterService>(default(IAdapterService), Constants.TransientStateIdenfier);
-
         /// <summary>
-        /// Returns an adaptable object for the given <paramref name="source"/>.
+        /// Adapts the instance to the given target type.
         /// </summary>
-        /// <returns>The adaptable object for the given source type.</returns>
-        public static IAdaptable<TSource> Adapt<TSource>(this TSource source)
-            where TSource : class
-        {
-            return AdapterService.Adapt<TSource>(source);
-        }
-
-        private static IAdapterService AdapterService
-        {
-            get
-            {
-                var implementation = transientService.Value ?? service.Value;
-                if (implementation == null)
-                    throw new InvalidOperationException("No adapter service has been set.");
-
-                return implementation;
-            }
-        }
+        /// <returns>The adapted instance or <see langword="null"/> if no compatible adapter was found.</returns>
+        T As<T>() where T : class;
     }
 }
