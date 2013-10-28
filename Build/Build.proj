@@ -259,7 +259,7 @@
               Retries="$(CopyRetryCount)"
               RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
 
-        <!-- Source files should be pre-processed -->
+        <!-- Non-source files are copied straight -->
         <Copy SourceFiles="@(ContentFiles)" Condition="'$(TargetFolder)' != '' And '%(Extension)' != '.cs'"
               DestinationFiles="@(ContentFiles->'%(PackageDir)content\%(TargetFolder)\Patterns\Adapter\%(RecursiveDir)%(Filename)%(Extension)')"
               ContinueOnError="false"
